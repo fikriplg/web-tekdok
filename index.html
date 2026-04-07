@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SynthMed - Platform riset terbuka untuk augmentasi dan sintesis dataset kesehatan. Gratis untuk seluruh peneliti. Perbanyak data riset Anda dengan AI.">
+  <meta name="keywords" content="dataset sintesis, augmentasi data, riset kesehatan, synthetic data, data augmentation, penelitian medis">
+  <title>SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- Cursor Glow -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <span class="nav-logo-icon">🧬</span>
+        SynthMed
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#features">Fitur</a>
+        <a href="#how-it-works">Cara Kerja</a>
+        <a href="#datasets">Dataset</a>
+        <a href="#researchers">Untuk Peneliti</a>
+        <a href="#contact" class="nav-cta">Mulai Riset</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-image"></div>
+    <div class="hero-particles" id="heroParticles"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Open Platform — Gratis untuk Semua Peneliti
+        </div>
+        <h1 class="hero-title">
+          Perbanyak <span class="gradient-text">Dataset Riset</span> Kesehatan Anda dengan AI
+        </h1>
+        <p class="hero-desc">
+          Platform terbuka dan gratis bagi seluruh peneliti untuk mengaugmentasi dan mensintesiskan dataset kesehatan. Ubah ratusan data menjadi ribuan — tanpa mengorbankan kualitas dan distribusi statistik.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-primary" id="btnStartFree">
+            <span>🔬</span> Mulai Sintesis Data
+          </button>
+          <button class="btn-secondary" id="btnLearnMore">
+            <span>📖</span> Baca Dokumentasi
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value" data-count="2500000" data-suffix="+">0</div>
+            <div class="hero-stat-label">Record Disintesis</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" data-count="850" data-suffix="+">0</div>
+            <div class="hero-stat-label">Peneliti Terdaftar</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" data-count="100" data-suffix="%">0</div>
+            <div class="hero-stat-label">Gratis & Terbuka</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-visual-card">
+          <div class="visual-header">
+            <div class="visual-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="visual-title-bar"></div>
+          </div>
+          <div class="visual-code">
+            <div class="line">
+              <span class="code-comment">// Generate synthetic patient data</span>
+            </div>
+            <div class="line">
+              <span class="code-keyword">import</span> <span class="code-bracket">{</span> <span class="code-function">SynthMed</span> <span class="code-bracket">}</span> <span class="code-keyword">from</span> <span class="code-string">'@synthmed/core'</span>
+            </div>
+            <div class="line">&nbsp;</div>
+            <div class="line">
+              <span class="code-keyword">const</span> generator = <span class="code-keyword">new</span> <span class="code-function">SynthMed</span><span class="code-bracket">()</span>
+            </div>
+            <div class="line">
+              <span class="code-keyword">const</span> dataset = <span class="code-keyword">await</span> generator.<span class="code-function">create</span><span class="code-bracket">({</span>
+            </div>
+            <div class="line">
+              &nbsp;&nbsp;<span class="code-string">type</span>: <span class="code-string">'rekam_medis'</span>,
+            </div>
+            <div class="line">
+              &nbsp;&nbsp;<span class="code-string">count</span>: <span class="code-number">10000</span>,
+            </div>
+            <div class="line">
+              &nbsp;&nbsp;<span class="code-string">privacy</span>: <span class="code-string">'differential'</span>
+            </div>
+          </div>
+          <div class="visual-progress">
+            <div class="progress-label">
+              <span>⚡ Generating dataset...</span>
+              <span>87%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-badge">
+          <div class="floating-icon green">✓</div>
+          <div>
+            <div style="font-weight:600; font-size:0.82rem;">100% Gratis</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Open Access</div>
+          </div>
+        </div>
+        <div class="floating-badge">
+          <div class="floating-icon blue">🔬</div>
+          <div>
+            <div style="font-weight:600; font-size:0.82rem;">850+ Peneliti</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Dari 45 universitas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES SECTION ===== -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header reveal">
+        <span class="section-label"><span class="dot"></span> Fitur Platform</span>
+        <h2 class="section-title">Alat Riset yang <span class="highlight">Powerful</span> & Gratis</h2>
+        <p class="section-subtitle">Dirancang khusus untuk membantu peneliti mengaugmentasi dataset kesehatan mereka. Semua fitur tersedia tanpa biaya.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon teal">🧠</div>
+          <h3 class="feature-title">Augmentasi Cerdas</h3>
+          <p class="feature-desc">Upload dataset kecil Anda, dan AI kami akan mempelajari pola distribusinya lalu menghasilkan data sintetis baru yang konsisten secara statistik.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon cyan">🔒</div>
+          <h3 class="feature-title">Privasi Data Terjaga</h3>
+          <p class="feature-desc">Data asli Anda tidak pernah disimpan di server. Proses sintesis menjamin privasi pasien melalui mekanisme differential privacy.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon green">📊</div>
+          <h3 class="feature-title">Validasi Statistik</h3>
+          <p class="feature-desc">Pengujian otomatis kualitas data meliputi distribusi, korelasi, dan consistency check terhadap standar medis internasional.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon blue">⚡</div>
+          <h3 class="feature-title">Generasi Real-time</h3>
+          <p class="feature-desc">Infrastruktur GPU-accelerated yang mampu menghasilkan jutaan record data sintetis dalam hitungan menit.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon purple">🔗</div>
+          <h3 class="feature-title">Ekspor Multi-Format</h3>
+          <p class="feature-desc">Unduh hasil sintesis dalam format CSV, JSON, Excel, atau FHIR. Siap digunakan langsung untuk analisis di Python, R, atau SPSS.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon amber">📋</div>
+          <h3 class="feature-title">Standar HL7 & FHIR</h3>
+          <p class="feature-desc">Dataset dihasilkan sesuai standar interoperabilitas kesehatan HL7 FHIR, siap digunakan untuk sistem EHR.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="how-header reveal">
+        <span class="section-label"><span class="dot"></span> Cara Kerja</span>
+        <h2 class="section-title">Empat Langkah <span class="highlight">Mudah</span></h2>
+        <p class="section-subtitle">Dari konfigurasi hingga dataset siap pakai, proses pembuatan data sintetis yang simpel dan intuitif.</p>
+      </div>
+      <div class="steps-container">
+        <div class="step-card reveal">
+          <div class="step-number">1</div>
+          <div class="step-icon">📝</div>
+          <h3 class="step-title">Upload Dataset Anda</h3>
+          <p class="step-desc">Unggah dataset riset Anda dalam format CSV atau Excel. Sistem akan menganalisis struktur, tipe data, dan distribusi kolom secara otomatis.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">2</div>
+          <div class="step-icon">🤖</div>
+          <h3 class="step-title">Atur Jumlah Data</h3>
+          <p class="step-desc">Tentukan berapa banyak data sintetis yang ingin dihasilkan — dari 2x hingga 100x lipat dari dataset asli Anda.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">3</div>
+          <div class="step-icon">🔍</div>
+          <h3 class="step-title">AI Sintesis & Validasi</h3>
+          <p class="step-desc">AI mempelajari pola dan menghasilkan data baru. Sistem otomatis memvalidasi distribusi statistik agar konsisten dengan data asli.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">4</div>
+          <div class="step-icon">📥</div>
+          <h3 class="step-title">Download & Gunakan</h3>
+          <p class="step-desc">Unduh dataset yang sudah diperbanyak dalam format pilihan Anda. Langsung siap untuk analisis lanjutan dan publikasi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DATASET TYPES ===== -->
+  <section class="dataset-types" id="datasets">
+    <div class="container">
+      <div class="dataset-header reveal">
+        <span class="section-label"><span class="dot"></span> Tipe Dataset</span>
+        <h2 class="section-title">Beragam <span class="highlight">Jenis Data</span> Kesehatan</h2>
+        <p class="section-subtitle">Kami mendukung pembuatan berbagai tipe dataset medis untuk kebutuhan riset, pengembangan, dan pendidikan.</p>
+      </div>
+      <div class="dataset-grid">
+        <div class="dataset-card reveal-left">
+          <div class="dataset-icon-wrap teal">🏥</div>
+          <div class="dataset-info">
+            <h3>Rekam Medis Elektronik (EHR)</h3>
+            <p>Data pasien sintetis lengkap meliputi demografi, diagnosis, prosedur, resep obat, hasil lab, dan riwayat kunjungan.</p>
+            <div class="dataset-tags">
+              <span class="dataset-tag">ICD-10</span>
+              <span class="dataset-tag">SNOMED CT</span>
+              <span class="dataset-tag">HL7 FHIR</span>
+            </div>
+          </div>
+        </div>
+        <div class="dataset-card reveal-right">
+          <div class="dataset-icon-wrap cyan">🔬</div>
+          <div class="dataset-info">
+            <h3>Data Laboratorium & Patologi</h3>
+            <p>Hasil pemeriksaan laboratorium sintetis dengan nilai yang realistis untuk hematologi, kimia darah, urinalisis, dan lainnya.</p>
+            <div class="dataset-tags">
+              <span class="dataset-tag">LOINC</span>
+              <span class="dataset-tag">CBC</span>
+              <span class="dataset-tag">Metabolic Panel</span>
+            </div>
+          </div>
+        </div>
+        <div class="dataset-card reveal-left">
+          <div class="dataset-icon-wrap green">💊</div>
+          <div class="dataset-info">
+            <h3>Data Farmasi & Obat</h3>
+            <p>Dataset peresepan obat, interaksi obat, efek samping, dan data farmakokinetik untuk riset farmakologi.</p>
+            <div class="dataset-tags">
+              <span class="dataset-tag">RxNorm</span>
+              <span class="dataset-tag">NDC</span>
+              <span class="dataset-tag">ATC</span>
+            </div>
+          </div>
+        </div>
+        <div class="dataset-card reveal-right">
+          <div class="dataset-icon-wrap purple">🧬</div>
+          <div class="dataset-info">
+            <h3>Data Genomik & Biomarker</h3>
+            <p>Sekuens genomik sintetis, data SNP, ekspresi gen, dan biomarker untuk penelitian presisi medicine.</p>
+            <div class="dataset-tags">
+              <span class="dataset-tag">VCF</span>
+              <span class="dataset-tag">FASTQ</span>
+              <span class="dataset-tag">Gene Expression</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS SECTION ===== -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal">
+          <div class="stat-icon">📊</div>
+          <div class="stat-value" data-count="2.5" data-suffix="M+" data-decimal="true">0</div>
+          <div class="stat-label">Record Data Disintesis</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-icon">👩‍🔬</div>
+          <div class="stat-value" data-count="850" data-suffix="+">0</div>
+          <div class="stat-label">Peneliti Aktif</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-icon">🏫</div>
+          <div class="stat-value" data-count="45" data-suffix="+">0</div>
+          <div class="stat-label">Universitas & Institusi</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-icon">📄</div>
+          <div class="stat-value" data-count="320" data-suffix="+">0</div>
+          <div class="stat-label">Publikasi Ilmiah</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="testimonials-header reveal">
+        <span class="section-label"><span class="dot"></span> Testimoni Peneliti</span>
+        <h2 class="section-title">Digunakan Oleh <span class="highlight">Peneliti</span> di Seluruh Indonesia</h2>
+        <p class="section-subtitle">Pengalaman para peneliti yang telah menggunakan SynthMed untuk memperkaya dataset riset mereka.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Dataset saya yang awalnya hanya 200 sampel bisa diaugmentasi menjadi 5.000 dengan distribusi yang sangat konsisten. Ini sangat membantu untuk riset skripsi saya."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar teal">NS</div>
+            <div>
+              <div class="testimonial-name">Nadia Safira, S.Ked</div>
+              <div class="testimonial-role">Mahasiswa Riset, FK Universitas Airlangga</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Platform yang luar biasa dan yang terpenting gratis! Kami menggunakan ini untuk memperbanyak dataset survei kesehatan masyarakat sehingga model prediktif kami lebih robust."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar cyan">PA</div>
+            <div>
+              <div class="testimonial-name">Prof. Ahmad Fauzi, Ph.D</div>
+              <div class="testimonial-role">Peneliti Senior, Fakultas Kesehatan Masyarakat UI</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Sebagai peneliti dengan keterbatasan akses data pasien, SynthMed menjadi solusi augmentasi data yang etis. Hasil sintesis mempertahankan korelasi antar variabel dengan sangat baik."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar green">DH</div>
+            <div>
+              <div class="testimonial-name">Dr. Hendra Wijaya, M.Biomed</div>
+              <div class="testimonial-role">Dosen Riset, FK Universitas Gadjah Mada</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== KEUNGGULAN PENELITI ===== -->
+  <section class="pricing" id="researchers">
+    <div class="container">
+      <div class="pricing-header reveal">
+        <span class="section-label"><span class="dot"></span> Untuk Peneliti</span>
+        <h2 class="section-title">Kenapa Peneliti <span class="highlight">Memilih</span> SynthMed?</h2>
+        <p class="section-subtitle">Akses penuh ke semua fitur — tanpa biaya, tanpa batasan, tanpa syarat komersial.</p>
+      </div>
+      <div class="pricing-grid">
+        <!-- Keunggulan 1 -->
+        <div class="pricing-card reveal">
+          <div class="pricing-name">🆓 Sepenuhnya Gratis</div>
+          <div class="pricing-desc">Tidak ada biaya tersembunyi</div>
+          <div class="pricing-price">
+            100% Free
+          </div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Unlimited augmentasi data</li>
+            <li><span class="check">✓</span> Semua tipe dataset kesehatan</li>
+            <li><span class="check">✓</span> Ekspor CSV, JSON, Excel</li>
+            <li><span class="check">✓</span> Tidak perlu kartu kredit</li>
+            <li><span class="check">✓</span> Akses selamanya</li>
+          </ul>
+          <button class="pricing-btn outline" id="btnFree">Daftar Sekarang</button>
+        </div>
+        <!-- Keunggulan 2 -->
+        <div class="pricing-card featured reveal">
+          <div class="pricing-popular">Open Access</div>
+          <div class="pricing-name">🔬 Rigor Ilmiah</div>
+          <div class="pricing-desc">Kualitas data terjamin untuk publikasi</div>
+          <div class="pricing-price">
+            Peer-Reviewed
+          </div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Distribusi statistik tervalidasi</li>
+            <li><span class="check">✓</span> Laporan kualitas otomatis</li>
+            <li><span class="check">✓</span> Uji KS-test & Chi-square</li>
+            <li><span class="check">✓</span> Preservasi korelasi antar variabel</li>
+            <li><span class="check">✓</span> Metodologi yang dapat disitasi</li>
+            <li><span class="check">✓</span> Audit trail lengkap</li>
+          </ul>
+          <button class="pricing-btn primary" id="btnRigor">Mulai Riset</button>
+        </div>
+        <!-- Keunggulan 3 -->
+        <div class="pricing-card reveal">
+          <div class="pricing-name">🤝 Komunitas Riset</div>
+          <div class="pricing-desc">Kolaborasi dengan sesama peneliti</div>
+          <div class="pricing-price">
+            Kolaboratif
+          </div>
+          <ul class="pricing-features">
+            <li><span class="check">✓</span> Forum diskusi peneliti</li>
+            <li><span class="check">✓</span> Webinar & workshop bulanan</li>
+            <li><span class="check">✓</span> Template dataset populer</li>
+            <li><span class="check">✓</span> Panduan sitasi untuk paper</li>
+            <li><span class="check">✓</span> Bantuan teknis komunitas</li>
+            <li><span class="check">✓</span> Newsletter riset terbaru</li>
+          </ul>
+          <button class="pricing-btn outline" id="btnCommunity">Gabung Komunitas</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA SECTION ===== -->
+  <section class="cta-section" id="contact">
+    <div class="container">
+      <div class="cta-card reveal">
+        <h2 class="cta-title">Siap Memperbanyak <span class="gradient-text">Dataset Riset</span> Anda?</h2>
+        <p class="cta-desc">Bergabung dengan 850+ peneliti yang sudah menggunakan SynthMed untuk augmentasi data. Daftar gratis, langsung gunakan.</p>
+        <div class="cta-input-group">
+          <input type="email" class="cta-input" placeholder="Masukkan email institusi Anda..." id="ctaEmail">
+          <button class="btn-primary" id="btnCta">🔬 Daftar sebagai Peneliti</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo">
+            <span class="nav-logo-icon">🧬</span>
+            SynthMed
+          </a>
+          <p>Platform riset terbuka dan gratis untuk augmentasi dataset kesehatan. Dibuat oleh peneliti, untuk peneliti.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="LinkedIn">in</a>
+            <a href="#" aria-label="Twitter">𝕏</a>
+            <a href="#" aria-label="GitHub">⌨</a>
+            <a href="#" aria-label="YouTube">▶</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#">Mulai Sintesis</a></li>
+            <li><a href="#">Template Dataset</a></li>
+            <li><a href="#">Validasi Kualitas</a></li>
+            <li><a href="#">Format Ekspor</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Untuk Peneliti</h4>
+          <ul>
+            <li><a href="#">Dokumentasi</a></li>
+            <li><a href="#">Tutorial & Panduan</a></li>
+            <li><a href="#">Cara Sitasi</a></li>
+            <li><a href="#">Publikasi Terkait</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Komunitas</h4>
+          <ul>
+            <li><a href="#">Forum Diskusi</a></li>
+            <li><a href="#">Webinar</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Kontak Tim</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 SynthMed. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script src="app.js"></script>
+</body>
+</html>
