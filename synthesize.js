@@ -67,6 +67,52 @@ function initUpload() {
   next1.addEventListener('click', () => {
     if (originalData.length > 0) goToStep(2);
   });
+
+  // Sample data button
+  const sampleBtn = document.getElementById('btnSample');
+  if (sampleBtn) {
+    sampleBtn.addEventListener('click', () => {
+      const sampleCSV = `patient_id,age,gender,blood_pressure_systolic,blood_pressure_diastolic,heart_rate,cholesterol_total,blood_sugar,bmi,diagnosis
+P001,45,Laki-laki,130,85,78,210,105,27.3,Hipertensi
+P002,62,Perempuan,145,92,82,245,180,31.2,Diabetes Mellitus
+P003,38,Laki-laki,120,78,72,190,95,24.1,Normal
+P004,55,Perempuan,138,88,75,230,110,28.7,Hipertensi
+P005,71,Laki-laki,155,95,88,260,210,29.5,Diabetes Mellitus
+P006,29,Perempuan,115,72,68,175,88,22.4,Normal
+P007,48,Laki-laki,142,90,80,225,130,26.8,Hipertensi
+P008,66,Perempuan,150,93,85,250,195,30.1,Diabetes Mellitus
+P009,34,Laki-laki,118,75,70,185,92,23.5,Normal
+P010,52,Perempuan,135,86,76,215,108,27.9,Hipertensi
+P011,43,Laki-laki,128,82,74,200,98,25.6,Normal
+P012,68,Perempuan,148,94,86,255,205,31.8,Diabetes Mellitus
+P013,41,Laki-laki,125,80,71,195,96,24.8,Normal
+P014,57,Perempuan,140,89,79,235,145,29.2,Hipertensi
+P015,73,Laki-laki,158,96,90,265,220,30.4,Diabetes Mellitus
+P016,31,Perempuan,112,70,66,170,85,21.8,Normal
+P017,50,Laki-laki,136,87,77,220,115,27.1,Hipertensi
+P018,64,Perempuan,152,95,84,248,190,30.6,Diabetes Mellitus
+P019,36,Laki-laki,122,76,69,188,90,23.2,Normal
+P020,59,Perempuan,144,91,81,240,160,28.4,Hipertensi
+P021,47,Laki-laki,132,84,76,208,102,26.5,Hipertensi
+P022,70,Perempuan,156,97,89,258,215,31.5,Diabetes Mellitus
+P023,33,Laki-laki,116,73,67,178,87,22.1,Normal
+P024,54,Perempuan,139,88,78,228,125,28.9,Hipertensi
+P025,65,Laki-laki,149,93,83,252,200,30.8,Diabetes Mellitus
+P026,28,Perempuan,110,68,65,168,82,21.3,Normal
+P027,46,Laki-laki,134,85,75,212,106,26.2,Hipertensi
+P028,61,Perempuan,147,92,82,242,175,29.8,Diabetes Mellitus
+P029,40,Laki-laki,124,79,73,192,94,24.5,Normal
+P030,58,Perempuan,141,90,80,238,150,28.1,Hipertensi`;
+
+      document.getElementById('fileName').textContent = 'sample_dataset.csv';
+      document.getElementById('fileSize').textContent = '30 baris × 10 kolom';
+      document.getElementById('fileInfo').classList.remove('hidden');
+      document.getElementById('uploadZone').style.display = 'none';
+      document.querySelector('.sample-divider').style.display = 'none';
+      sampleBtn.style.display = 'none';
+      parseCSV(sampleCSV);
+    });
+  }
 }
 
 function handleFile(file) {

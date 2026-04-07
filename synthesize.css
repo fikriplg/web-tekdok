@@ -165,6 +165,29 @@ ul { list-style: none; }
 }
 .btn-upload:hover { background: rgba(13, 148, 136, 0.2); border-color: var(--primary-400); }
 
+/* Sample Data */
+.sample-divider {
+  text-align: center; margin: 20px 0 14px; position: relative;
+}
+.sample-divider::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px; background: var(--glass-border);
+}
+.sample-divider span {
+  position: relative; background: var(--glass-bg); padding: 0 16px;
+  font-size: 0.82rem; color: var(--text-muted);
+}
+.btn-sample {
+  width: 100%; padding: 14px 24px; border-radius: var(--radius-md);
+  background: rgba(16, 185, 129, 0.06); border: 1px dashed rgba(16, 185, 129, 0.3);
+  color: var(--emerald-400); font-weight: 600; font-size: 0.9rem; cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.btn-sample:hover {
+  background: rgba(16, 185, 129, 0.12); border-color: var(--emerald-400);
+  transform: translateY(-1px);
+}
+
 /* File Info */
 .file-info {
   display: flex; align-items: center; justify-content: space-between;

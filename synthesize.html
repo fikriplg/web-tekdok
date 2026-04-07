@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SynthMed — Sintesis Dataset</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧬</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -20,9 +21,9 @@
       </a>
       <div class="nav-links" id="navLinks">
         <a href="index.html">Beranda</a>
-        <a href="index.html#features">Fitur</a>
+        <a href="docs.html">Dokumentasi</a>
         <a href="synthesize.html" class="active">Synthesizer</a>
-        <a href="index.html#contact" class="nav-cta">Kembali</a>
+        <a href="index.html" class="nav-cta">Kembali</a>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -77,6 +78,11 @@
             <input type="file" id="fileInput" accept=".csv" hidden>
             <button class="btn-upload" id="btnBrowse">Pilih File</button>
           </div>
+
+          <div class="sample-divider">
+            <span>atau coba dengan data sample</span>
+          </div>
+          <button class="btn-sample" id="btnSample">🏥 Gunakan Data Sample (30 pasien)</button>
 
           <div class="file-info hidden" id="fileInfo">
             <div class="file-meta">

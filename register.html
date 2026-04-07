@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynthMed — Daftar sebagai Peneliti</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧬</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-500:#0d9488;--primary-400:#2dd4bf;--primary-300:#5eead4;
+      --accent-400:#22d3ee;--emerald-400:#34d399;--emerald-500:#10b981;
+      --bg-dark:#0a1628;--bg-card:#0f2137;
+      --text-primary:#f0fdfa;--text-secondary:#94a3b8;--text-muted:#64748b;
+      --border:rgba(13,148,136,.15);
+      --font-sans:'Inter',system-ui,sans-serif;--font-display:'Outfit','Inter',sans-serif;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-sans);background:var(--bg-dark);color:var(--text-primary);line-height:1.7;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+    a{color:var(--primary-400);text-decoration:none}
+
+    /* Navbar */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:10px 0;background:rgba(10,22,40,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-container{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--text-primary)}
+    .nav-logo-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--primary-500),#06b6d4);display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .nav-links{display:flex;align-items:center;gap:28px}
+    .nav-links a{font-size:.88rem;font-weight:500;color:var(--text-secondary)}
+    .nav-links a:hover{color:var(--primary-300)}
+    .nav-links a.active{color:var(--primary-400)}
+    .nav-cta{padding:8px 20px!important;border-radius:999px;background:linear-gradient(135deg,var(--primary-500),#06b6d4);color:#042f2e!important;font-weight:600!important}
+    .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer}
+    .nav-toggle span{width:24px;height:2px;background:var(--text-primary);border-radius:2px}
+
+    /* Main */
+    .reg-main{flex:1;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px}
+    .reg-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:900px;width:100%;align-items:center}
+
+    /* Left */
+    .reg-info h1{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;line-height:1.2;margin-bottom:16px}
+    .grad{background:linear-gradient(135deg,var(--primary-400),var(--accent-400),var(--emerald-400));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .reg-info p{color:var(--text-secondary);font-size:.95rem;margin-bottom:24px}
+    .perks{display:grid;gap:12px}
+    .perk{display:flex;align-items:start;gap:10px;font-size:.9rem;color:var(--text-secondary)}
+    .perk-icon{width:28px;height:28px;border-radius:8px;background:rgba(13,148,136,.1);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;margin-top:2px}
+
+    /* Card */
+    .reg-card{background:rgba(15,33,55,.7);border:1px solid var(--border);border-radius:20px;padding:36px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .reg-card h2{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:4px}
+    .reg-card .sub{font-size:.85rem;color:var(--text-muted);margin-bottom:24px}
+
+    /* Form */
+    .form-group{margin-bottom:18px}
+    .form-label{display:block;font-size:.82rem;font-weight:600;margin-bottom:6px;color:var(--text-secondary)}
+    .form-input{width:100%;padding:11px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(13,148,136,.04);color:var(--text-primary);font-family:var(--font-sans);font-size:.9rem;outline:none;transition:.2s}
+    .form-input:focus{border-color:var(--primary-400);background:rgba(13,148,136,.08);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+    .form-input::placeholder{color:var(--text-muted)}
+    select.form-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+    select.form-input option{background:var(--bg-card);color:var(--text-primary)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    .btn-submit{width:100%;padding:13px;border:none;border-radius:999px;background:linear-gradient(135deg,var(--primary-500),#06b6d4);color:#042f2e;font-family:var(--font-sans);font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;margin-top:6px}
+    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,148,136,.35)}
+
+    .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-muted);font-size:.8rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+    .login-link{text-align:center;font-size:.85rem;color:var(--text-muted)}
+    .login-link a{color:var(--primary-400);font-weight:600}
+
+    /* Success */
+    .success-msg{display:none;text-align:center;padding:32px 20px}
+    .success-msg.show{display:block}
+    .success-icon{font-size:3rem;margin-bottom:16px}
+    .success-msg h3{font-family:var(--font-display);font-size:1.3rem;margin-bottom:8px}
+    .success-msg p{font-size:.9rem;color:var(--text-secondary);margin-bottom:20px}
+    .success-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:999px;background:linear-gradient(135deg,var(--primary-500),#06b6d4);color:#042f2e;font-weight:700;font-size:.9rem;text-decoration:none;transition:.2s}
+    .success-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(13,148,136,.3)}
+
+    /* Footer */
+    .reg-footer{padding:24px;text-align:center;border-top:1px solid rgba(148,163,184,.06);font-size:.82rem;color:var(--text-muted)}
+
+    /* Responsive */
+    @media(max-width:768px){
+      .reg-wrapper{grid-template-columns:1fr}
+      .reg-info{text-align:center}
+      .perks{max-width:320px;margin:0 auto}
+      .form-row{grid-template-columns:1fr}
+      .nav-links{display:none;position:fixed;inset:0;background:rgba(10,22,40,.97);backdrop-filter:blur(20px);flex-direction:column;justify-content:center;align-items:center;gap:24px;z-index:999}
+      .nav-links.active{display:flex}
+      .nav-toggle{display:flex;z-index:1001}
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon">🧬</span>
+        SynthMed
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Beranda</a>
+        <a href="synthesize.html">Synthesizer</a>
+        <a href="docs.html">Dokumentasi</a>
+        <a href="register.html" class="active nav-cta">Daftar</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="reg-main">
+    <div class="reg-wrapper">
+
+      <!-- LEFT INFO -->
+      <div class="reg-info">
+        <h1>Gabung sebagai <span class="grad">Peneliti</span></h1>
+        <p>Daftar gratis dan mulai augmentasi dataset kesehatan Anda. Tidak ada biaya, tidak ada batasan.</p>
+        <div class="perks">
+          <div class="perk">
+            <div class="perk-icon">🆓</div>
+            <div><strong>100% Gratis</strong> — Akses penuh ke semua fitur tanpa biaya</div>
+          </div>
+          <div class="perk">
+            <div class="perk-icon">🔒</div>
+            <div><strong>Data Aman</strong> — Proses di browser, data tidak disimpan di server</div>
+          </div>
+          <div class="perk">
+            <div class="perk-icon">📊</div>
+            <div><strong>Unlimited</strong> — Tidak ada batas jumlah sintesis</div>
+          </div>
+          <div class="perk">
+            <div class="perk-icon">🎓</div>
+            <div><strong>Akademik</strong> — Metodologi yang dapat disitasi untuk paper</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM -->
+      <div class="reg-card">
+        <div id="formSection">
+          <h2>🔬 Buat Akun Peneliti</h2>
+          <p class="sub">Isi data di bawah untuk memulai</p>
+
+          <form id="registerForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" class="form-input" placeholder="Dr. Nama Anda" required id="regName">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Gelar / Title</label>
+                <select class="form-input" id="regTitle">
+                  <option value="">Pilih gelar</option>
+                  <option>Mahasiswa S1</option>
+                  <option>Mahasiswa S2</option>
+                  <option>Mahasiswa S3</option>
+                  <option>Dosen / Peneliti</option>
+                  <option>Profesor</option>
+                  <option>Tenaga Medis</option>
+                  <option>Lainnya</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Institusi</label>
+              <input type="email" class="form-input" placeholder="nama@universitas.ac.id" required id="regEmail">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Institusi / Universitas</label>
+              <input type="text" class="form-input" placeholder="Universitas Indonesia" required id="regInst">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Bidang Riset</label>
+                <select class="form-input" id="regField">
+                  <option value="">Pilih bidang</option>
+                  <option>Kedokteran Klinis</option>
+                  <option>Kesehatan Masyarakat</option>
+                  <option>Farmakologi</option>
+                  <option>Bioinformatika</option>
+                  <option>Epidemiologi</option>
+                  <option>Biostatistik</option>
+                  <option>Keperawatan</option>
+                  <option>Lainnya</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" placeholder="Min. 8 karakter" required minlength="8" id="regPass">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit">🔬 Daftar sebagai Peneliti</button>
+          </form>
+
+          <div class="divider">atau</div>
+          <p class="login-link">Sudah punya akun? <a href="register.html">Masuk di sini</a></p>
+        </div>
+
+        <div class="success-msg" id="successSection">
+          <div class="success-icon">✅</div>
+          <h3>Pendaftaran Berhasil!</h3>
+          <p>Selamat datang di SynthMed, <strong id="welcomeName"></strong>! Akun Anda telah terdaftar. Mulai augmentasi dataset Anda sekarang.</p>
+          <a href="synthesize.html" class="success-btn">🔬 Mulai Sintesis Data</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="reg-footer">
+    <p>© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
+  </footer>
+
+  <script>
+    document.getElementById('navToggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+      document.getElementById('navLinks').classList.toggle('active');
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      const inst = document.getElementById('regInst').value;
+
+      // Simulate registration
+      const btn = this.querySelector('.btn-submit');
+      btn.textContent = '⏳ Mendaftarkan...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        // Save to localStorage
+        const users = JSON.parse(localStorage.getItem('synthmed_users') || '[]');
+        users.push({ name, email, inst, date: new Date().toISOString() });
+        localStorage.setItem('synthmed_users', JSON.stringify(users));
+        localStorage.setItem('synthmed_current_user', name);
+
+        // Show success
+        document.getElementById('formSection').style.display = 'none';
+        document.getElementById('welcomeName').textContent = name;
+        document.getElementById('successSection').classList.add('show');
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

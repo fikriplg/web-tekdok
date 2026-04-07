@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynthMed — Dokumentasi</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧬</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon">🧬</span>
+        SynthMed
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Beranda</a>
+        <a href="synthesize.html">Synthesizer</a>
+        <a href="docs.html" class="active">Dokumentasi</a>
+        <a href="synthesize.html" class="nav-cta">Mulai Riset</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO DOCS -->
+  <header class="docs-hero">
+    <div class="docs-hero-inner">
+      <span class="badge"><span class="badge-dot"></span> Dokumentasi</span>
+      <h1>Panduan Lengkap <span class="grad">SynthMed</span></h1>
+      <p>Pelajari cara menggunakan platform sintesis dataset kesehatan dari awal hingga mahir.</p>
+      <div class="hero-links">
+        <a href="#quick-start" class="hl-btn primary">🚀 Quick Start</a>
+        <a href="#faq" class="hl-btn secondary">❓ FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- TABLE OF CONTENTS -->
+  <nav class="toc-bar">
+    <div class="toc-inner">
+      <a href="#intro" class="toc-link">Pengantar</a>
+      <a href="#quick-start" class="toc-link">Quick Start</a>
+      <a href="#sample-data" class="toc-link">Data Sample</a>
+      <a href="#methods" class="toc-link">Metode</a>
+      <a href="#quality" class="toc-link">Kualitas</a>
+      <a href="#faq" class="toc-link">FAQ</a>
+      <a href="#citation" class="toc-link">Sitasi</a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+
+    <!-- PENGANTAR -->
+    <section class="doc-section" id="intro">
+      <div class="section-head">
+        <span class="sec-badge">Memulai</span>
+        <h2>Apa itu SynthMed?</h2>
+      </div>
+      <div class="section-body">
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>SynthMed</strong> adalah platform riset terbuka dan <strong>100% gratis</strong> yang membantu peneliti kesehatan untuk mengaugmentasi (memperbanyak) dataset mereka menggunakan metode statistik. Semua proses berjalan di browser — data Anda tidak pernah dikirim ke server manapun.
+          </div>
+        </div>
+        <h3>Mengapa Data Sintesis?</h3>
+        <p>Dalam penelitian kesehatan, akses ke data pasien seringkali terbatas karena regulasi privasi (HIPAA, GDPR). Data sintesis memungkinkan peneliti untuk:</p>
+        <ul>
+          <li>Memperbanyak dataset kecil menjadi dataset besar (2x - 100x lipat)</li>
+          <li>Mempertahankan distribusi statistik yang sama dengan data asli</li>
+          <li>Menghindari pelanggaran privasi pasien</li>
+          <li>Meningkatkan akurasi model prediktif dengan lebih banyak data training</li>
+        </ul>
+
+        <h3>Fitur Utama</h3>
+        <div class="features-row">
+          <div class="feat-card">
+            <div class="feat-icon">📤</div>
+            <h4>Upload & Analisis</h4>
+            <p>Upload CSV, sistem otomatis deteksi tipe kolom dan distribusi data.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">🔬</div>
+            <h4>2 Metode Sintesis</h4>
+            <p>Statistical Sampling atau Bootstrap + Noise sesuai kebutuhan.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">📊</div>
+            <h4>Laporan Kualitas</h4>
+            <p>Perbandingan distribusi data asli vs sintetis otomatis.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">📥</div>
+            <h4>Download Instan</h4>
+            <p>Unduh dataset sintetis dalam format CSV langsung dari browser.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK START -->
+    <section class="doc-section" id="quick-start">
+      <div class="section-head">
+        <span class="sec-badge">Memulai</span>
+        <h2>Quick Start</h2>
+      </div>
+      <div class="section-body">
+        <p>Ikuti 4 langkah sederhana untuk membuat dataset sintetis pertama Anda:</p>
+        <div class="steps-row">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <h4>Upload Dataset CSV</h4>
+            <p>Buka <a href="synthesize.html">Synthesizer</a>, upload file CSV atau klik <strong>"Gunakan Data Sample"</strong> untuk mencoba langsung.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <h4>Atur Konfigurasi</h4>
+            <p>Pilih multiplier (2x-100x), kolom target, metode sintesis, dan level variasi (noise).</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <h4>Generate Data</h4>
+            <p>Klik "Mulai Generate" dan tunggu proses selesai. AI akan menganalisis pola dan menghasilkan data baru.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <h4>Review & Download</h4>
+            <p>Periksa laporan kualitas, bandingkan distribusi, lalu unduh file CSV hasil sintesis.</p>
+          </div>
+        </div>
+        <div class="callout callout-success">
+          <span class="callout-icon">🎯</span>
+          <div><strong>Tips:</strong> Gunakan <a href="#sample-data">data sample</a> terlebih dahulu untuk memahami cara kerja platform.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAMPLE DATA -->
+    <section class="doc-section" id="sample-data">
+      <div class="section-head">
+        <span class="sec-badge">Memulai</span>
+        <h2>Data Sample</h2>
+      </div>
+      <div class="section-body">
+        <p>Kami menyediakan dataset sample berisi <strong>30 record pasien</strong> dengan <strong>10 kolom</strong> untuk mencoba platform:</p>
+
+        <div class="sample-box">
+          <div class="sample-info">
+            <h4>🏥 Data Pasien Kesehatan</h4>
+            <p>Berisi data demografi, vital signs, lab results, dan diagnosis. Cocok untuk latihan augmentasi data klinik.</p>
+            <div class="tag-row">
+              <span class="tag">30 baris</span>
+              <span class="tag">10 kolom</span>
+              <span class="tag">7 numerik</span>
+              <span class="tag">3 kategorikal</span>
+            </div>
+          </div>
+          <a href="sample_dataset.csv" download class="dl-btn">📥 Download CSV</a>
+        </div>
+
+        <h3>Detail Kolom</h3>
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr><th>Kolom</th><th>Tipe</th><th>Deskripsi</th><th>Contoh</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>patient_id</code></td><td>Kategorikal</td><td>ID unik pasien</td><td>P001</td></tr>
+              <tr><td><code>age</code></td><td>Numerik</td><td>Usia pasien (tahun)</td><td>45</td></tr>
+              <tr><td><code>gender</code></td><td>Kategorikal</td><td>Jenis kelamin</td><td>Laki-laki</td></tr>
+              <tr><td><code>blood_pressure_systolic</code></td><td>Numerik</td><td>Tekanan darah sistolik (mmHg)</td><td>130</td></tr>
+              <tr><td><code>blood_pressure_diastolic</code></td><td>Numerik</td><td>Tekanan darah diastolik (mmHg)</td><td>85</td></tr>
+              <tr><td><code>heart_rate</code></td><td>Numerik</td><td>Detak jantung (bpm)</td><td>78</td></tr>
+              <tr><td><code>cholesterol_total</code></td><td>Numerik</td><td>Total kolesterol (mg/dL)</td><td>210</td></tr>
+              <tr><td><code>blood_sugar</code></td><td>Numerik</td><td>Gula darah (mg/dL)</td><td>105</td></tr>
+              <tr><td><code>bmi</code></td><td>Numerik</td><td>Body Mass Index</td><td>27.3</td></tr>
+              <tr><td><code>diagnosis</code></td><td>Kategorikal</td><td>Diagnosis utama</td><td>Hipertensi</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- METODE SINTESIS -->
+    <section class="doc-section" id="methods">
+      <div class="section-head">
+        <span class="sec-badge">Referensi Teknis</span>
+        <h2>Metode Sintesis</h2>
+      </div>
+      <div class="section-body">
+        <p>SynthMed menyediakan 2 metode sintesis data. Pilih sesuai kebutuhan riset Anda:</p>
+
+        <div class="compare-row">
+          <div class="compare-card">
+            <div class="cc-header blue">
+              <span>📈</span>
+              <h4>Statistical Sampling</h4>
+            </div>
+            <p>Menganalisis distribusi statistik setiap kolom (mean, std, min, max) lalu menghasilkan data baru dari distribusi tersebut.</p>
+            <h5>🔧 Cara Kerja:</h5>
+            <ol>
+              <li>Hitung mean (μ) dan standar deviasi (σ) setiap kolom numerik</li>
+              <li>Generate nilai baru: <code>X ~ N(μ, σ × (1 + noise))</code></li>
+              <li>Untuk kategorikal: weighted random sampling berdasarkan frekuensi</li>
+              <li>Clamp ke rentang [min-5%, max+5%]</li>
+            </ol>
+            <h5>✅ Kelebihan:</h5>
+            <ul>
+              <li>Data benar-benar baru, bukan duplikasi</li>
+              <li>Distribusi statistik terjaga</li>
+              <li>Cocok untuk dataset besar</li>
+            </ul>
+            <h5>⚠️ Kekurangan:</h5>
+            <ul>
+              <li>Korelasi antar kolom bisa berkurang</li>
+              <li>Kurang cocok untuk data non-normal</li>
+            </ul>
+            <div class="cc-best">Terbaik untuk: Dataset numerik dengan distribusi normal</div>
+          </div>
+
+          <div class="compare-card">
+            <div class="cc-header green">
+              <span>🔄</span>
+              <h4>Bootstrap + Noise</h4>
+            </div>
+            <p>Mengambil baris acak dari data asli, lalu menambahkan noise Gaussian pada kolom numerik.</p>
+            <h5>🔧 Cara Kerja:</h5>
+            <ol>
+              <li>Random sampling with replacement dari data asli</li>
+              <li>Tambahkan noise: <code>X' = X + N(0, σ × noise)</code></li>
+              <li>Kolom kategorikal tetap tidak berubah</li>
+              <li>Clamp ke rentang yang valid</li>
+            </ol>
+            <h5>✅ Kelebihan:</h5>
+            <ul>
+              <li>Korelasi antar kolom terjaga</li>
+              <li>Pola data asli dipertahankan</li>
+              <li>Aman untuk data non-normal</li>
+            </ul>
+            <h5>⚠️ Kekurangan:</h5>
+            <ul>
+              <li>Data sintetis lebih mirip satu sama lain</li>
+              <li>Variasi lebih terbatas</li>
+            </ul>
+            <div class="cc-best">Terbaik untuk: Dataset kecil yang perlu menjaga pola</div>
+          </div>
+        </div>
+
+        <h3>Parameter Konfigurasi</h3>
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Rentang</th><th>Rekomendasi</th><th>Deskripsi</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Multiplier</strong></td><td>2x – 100x</td><td>5x – 10x</td><td>Berapa kali lipat data output dari data asli</td></tr>
+              <tr><td><strong>Noise Level</strong></td><td>0% – 100%</td><td>10% – 20%</td><td>Tingkat variasi data sintetis dari data asli</td></tr>
+              <tr><td><strong>Kolom</strong></td><td>Pilih kolom</td><td>Semua kolom</td><td>Kolom mana yang ingin diaugmentasi</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>Perhatian:</strong> Noise level di atas 30% dapat mengubah distribusi data secara signifikan. Untuk riset medis, gunakan 10-20%.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KUALITAS -->
+    <section class="doc-section" id="quality">
+      <div class="section-head">
+        <span class="sec-badge">Referensi Teknis</span>
+        <h2>Metrik Kualitas</h2>
+      </div>
+      <div class="section-body">
+        <p>Setiap hasil sintesis dilengkapi laporan kualitas otomatis. Berikut metrik yang digunakan:</p>
+
+        <h3>Distribution Similarity</h3>
+        <p>Mengukur seberapa mirip distribusi data sintetis dengan data asli berdasarkan perbandingan mean:</p>
+        <div class="code-box">
+          <div class="code-title">Formula</div>
+          <pre>similarity = 100 - |mean_asli - mean_sintetis| / |mean_asli| × 100</pre>
+        </div>
+
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr><th>Skor</th><th>Rating</th><th>Interpretasi</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>> 95%</strong></td><td>🟢 Sangat Baik</td><td>Distribusi hampir identik dengan data asli</td></tr>
+              <tr><td><strong>85% – 95%</strong></td><td>🟡 Baik</td><td>Perbedaan minor, masih layak untuk riset</td></tr>
+              <tr><td><strong>70% – 85%</strong></td><td>🟠 Cukup</td><td>Perlu evaluasi lebih lanjut</td></tr>
+              <tr><td><strong>< 70%</strong></td><td>🔴 Kurang</td><td>Coba kurangi noise level</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Informasi Tambahan</h3>
+        <ul>
+          <li><strong>Total Baris Generated</strong> — Jumlah baris data sintetis yang berhasil dibuat</li>
+          <li><strong>Kolom Disintesis</strong> — Jumlah kolom yang dipilih untuk diaugmentasi</li>
+          <li><strong>Faktor Augmentasi</strong> — Multiplier yang digunakan (misal: 5x)</li>
+          <li><strong>Tab Perbandingan</strong> — Mean, min, max data asli vs sintetis per kolom</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="doc-section" id="faq">
+      <div class="section-head">
+        <span class="sec-badge">Bantuan</span>
+        <h2>FAQ (Pertanyaan Umum)</h2>
+      </div>
+      <div class="section-body">
+        <div class="faq-list">
+          <details class="faq" open>
+            <summary>Apakah SynthMed benar-benar gratis?</summary>
+            <div class="faq-body">Ya, 100% gratis tanpa batasan. Tidak ada paket berbayar, tidak perlu kartu kredit, dan akses penuh ke semua fitur.</div>
+          </details>
+          <details class="faq">
+            <summary>Apakah data saya aman?</summary>
+            <div class="faq-body">Ya. Semua proses sintesis dilakukan <strong>di browser Anda</strong> (client-side). Data tidak pernah dikirim atau disimpan di server manapun.</div>
+          </details>
+          <details class="faq">
+            <summary>Berapa ukuran file maksimal yang bisa di-upload?</summary>
+            <div class="faq-body">Maksimal 10MB. Untuk file yang lebih besar, kami sarankan untuk membagi dataset menjadi beberapa bagian.</div>
+          </details>
+          <details class="faq">
+            <summary>Format file apa saja yang didukung?</summary>
+            <div class="faq-body">Saat ini hanya <strong>CSV</strong> (Comma-Separated Values) dengan header di baris pertama dan pemisah koma. Dukungan Excel (.xlsx) akan ditambahkan.</div>
+          </details>
+          <details class="faq">
+            <summary>Metode mana yang sebaiknya saya gunakan?</summary>
+            <div class="faq-body">Gunakan <strong>Statistical Sampling</strong> jika data Anda berdistribusi normal dan ingin data yang benar-benar baru. Gunakan <strong>Bootstrap + Noise</strong> jika ingin mempertahankan korelasi antar variabel.</div>
+          </details>
+          <details class="faq">
+            <summary>Apakah hasil sintesis bisa untuk publikasi ilmiah?</summary>
+            <div class="faq-body">Ya, tentu. Pastikan untuk menjelaskan metode augmentasi yang digunakan dalam bagian metodologi paper Anda. Lihat bagian <a href="#citation">Cara Sitasi</a> di bawah.</div>
+          </details>
+          <details class="faq">
+            <summary>Berapa noise level yang disarankan?</summary>
+            <div class="faq-body">Untuk riset medis: <strong>10-20%</strong>. Noise terlalu tinggi (&gt;30%) dapat mengubah distribusi data secara signifikan dan mempengaruhi validitas hasil.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- SITASI -->
+    <section class="doc-section" id="citation">
+      <div class="section-head">
+        <span class="sec-badge">Akademik</span>
+        <h2>Cara Sitasi</h2>
+      </div>
+      <div class="section-body">
+        <p>Jika Anda menggunakan SynthMed dalam penelitian, silakan sitasi:</p>
+
+        <div class="cite-box">
+          <div class="cite-label">APA Format</div>
+          <p class="cite-text">SynthMed Team. (2026). <em>SynthMed: Open Platform for Healthcare Dataset Synthesis</em>. Retrieved from https://synthmed.id</p>
+        </div>
+
+        <div class="cite-box">
+          <div class="cite-label">BibTeX</div>
+          <pre class="cite-code">@misc{synthmed2026,
+  title  = {SynthMed: Open Platform for Healthcare Dataset Synthesis},
+  author = {SynthMed Team},
+  year   = {2026},
+  url    = {https://synthmed.id}
+}</pre>
+        </div>
+
+        <div class="callout callout-success">
+          <span class="callout-icon">🙏</span>
+          <div><strong>Terima kasih!</strong> Dengan menyitasi SynthMed, Anda membantu kami mengembangkan platform ini untuk lebih banyak peneliti.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="docs-footer">
+    <div class="footer-inner">
+      <p>© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
+      <div class="footer-links">
+        <a href="index.html">Beranda</a>
+        <a href="synthesize.html">Synthesizer</a>
+        <a href="docs.html">Dokumentasi</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav
+    document.getElementById('navToggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+      document.getElementById('navLinks').classList.toggle('active');
+    });
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const el = document.querySelector(a.getAttribute('href'));
+        if (el) window.scrollTo({ top: el.offsetTop - 70, behavior: 'smooth' });
+      });
+    });
+    // Active TOC on scroll
+    const secs = document.querySelectorAll('.doc-section');
+    const tocLinks = document.querySelectorAll('.toc-link');
+    window.addEventListener('scroll', () => {
+      let cur = '';
+      secs.forEach(s => { if (window.pageYOffset >= s.offsetTop - 100) cur = s.id; });
+      tocLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
+      });
+    });
+  </script>
+</body>
+</html>
