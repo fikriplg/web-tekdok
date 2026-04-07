@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynthMed — Sintesis Dataset</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="synthesize.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon">🧬</span>
+        SynthMed
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Beranda</a>
+        <a href="index.html#features">Fitur</a>
+        <a href="synthesize.html" class="active">Synthesizer</a>
+        <a href="index.html#contact" class="nav-cta">Kembali</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN TOOL -->
+  <main class="tool-main">
+    <div class="container">
+
+      <!-- Page Header -->
+      <div class="tool-header">
+        <span class="section-label"><span class="dot"></span> Dataset Synthesizer</span>
+        <h1 class="tool-title">Sintesis <span class="gradient-text">Dataset</span> Anda</h1>
+        <p class="tool-subtitle">Upload dataset CSV Anda, atur parameter, dan generate data sintetis baru yang mempertahankan distribusi statistik asli.</p>
+      </div>
+
+      <!-- Stepper -->
+      <div class="stepper">
+        <div class="step active" data-step="1">
+          <div class="step-dot">1</div>
+          <span>Upload</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <div class="step-dot">2</div>
+          <span>Konfigurasi</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <div class="step-dot">3</div>
+          <span>Generate</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="4">
+          <div class="step-dot">4</div>
+          <span>Download</span>
+        </div>
+      </div>
+
+      <!-- ===== STEP 1: UPLOAD ===== -->
+      <section class="tool-step" id="step1">
+        <div class="card">
+          <h2 class="card-title">📁 Upload Dataset</h2>
+          <p class="card-desc">Upload file CSV Anda. Ukuran maksimal 10MB.</p>
+
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon">📤</div>
+            <h3>Drag & Drop file CSV di sini</h3>
+            <p>atau klik untuk memilih file</p>
+            <input type="file" id="fileInput" accept=".csv" hidden>
+            <button class="btn-upload" id="btnBrowse">Pilih File</button>
+          </div>
+
+          <div class="file-info hidden" id="fileInfo">
+            <div class="file-meta">
+              <span class="file-icon">📄</span>
+              <div>
+                <div class="file-name" id="fileName">-</div>
+                <div class="file-size" id="fileSize">-</div>
+              </div>
+            </div>
+            <button class="btn-remove" id="btnRemove">✕</button>
+          </div>
+
+          <!-- Data Preview -->
+          <div class="data-preview hidden" id="dataPreview">
+            <h3 class="preview-title">📊 Preview Data (5 baris pertama)</h3>
+            <div class="table-wrapper">
+              <table id="previewTable"></table>
+            </div>
+            <div class="data-summary" id="dataSummary"></div>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-primary disabled" id="btnNext1" disabled>Lanjut ke Konfigurasi →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STEP 2: CONFIGURE ===== -->
+      <section class="tool-step hidden" id="step2">
+        <div class="card">
+          <h2 class="card-title">⚙️ Konfigurasi Sintesis</h2>
+          <p class="card-desc">Atur parameter untuk proses augmentasi data Anda.</p>
+
+          <div class="config-grid">
+            <!-- Multiplier -->
+            <div class="config-item">
+              <label class="config-label">Jumlah Data Output</label>
+              <p class="config-help">Tentukan kelipatan dari data asli</p>
+              <div class="multiplier-control">
+                <button class="mult-btn" id="multDown">−</button>
+                <div class="mult-display">
+                  <span class="mult-value" id="multValue">2</span>
+                  <span class="mult-suffix">x lipat</span>
+                </div>
+                <button class="mult-btn" id="multUp">+</button>
+              </div>
+              <div class="output-estimate">
+                Estimasi output: <strong id="outputEstimate">0</strong> baris
+              </div>
+            </div>
+
+            <!-- Column Selection -->
+            <div class="config-item">
+              <label class="config-label">Kolom yang Disintesis</label>
+              <p class="config-help">Pilih kolom yang ingin diaugmentasi</p>
+              <div class="column-list" id="columnList"></div>
+            </div>
+
+            <!-- Method -->
+            <div class="config-item">
+              <label class="config-label">Metode Sintesis</label>
+              <p class="config-help">Pilih algoritma yang digunakan</p>
+              <div class="method-options">
+                <label class="method-option selected">
+                  <input type="radio" name="method" value="statistical" checked>
+                  <div class="method-card">
+                    <div class="method-icon">📈</div>
+                    <div class="method-name">Statistical Sampling</div>
+                    <div class="method-desc">Pertahankan distribusi & korelasi antar kolom</div>
+                  </div>
+                </label>
+                <label class="method-option">
+                  <input type="radio" name="method" value="bootstrap">
+                  <div class="method-card">
+                    <div class="method-icon">🔄</div>
+                    <div class="method-name">Bootstrap + Noise</div>
+                    <div class="method-desc">Resample dengan penambahan noise Gaussian</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Noise Level -->
+            <div class="config-item">
+              <label class="config-label">Level Variasi (Noise)</label>
+              <p class="config-help">Seberapa besar variasi dari data asli</p>
+              <input type="range" class="noise-slider" id="noiseSlider" min="0" max="100" value="15">
+              <div class="noise-labels">
+                <span>Identik</span>
+                <span class="noise-value" id="noiseValue">15%</span>
+                <span>Sangat Variatif</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-secondary" id="btnBack2">← Kembali</button>
+            <button class="btn-primary" id="btnNext2">Mulai Generate 🔬</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STEP 3: GENERATING ===== -->
+      <section class="tool-step hidden" id="step3">
+        <div class="card">
+          <h2 class="card-title">🔬 Proses Sintesis</h2>
+          <p class="card-desc">AI sedang menganalisis pola dan menghasilkan data sintetis...</p>
+
+          <div class="generation-progress">
+            <div class="gen-step active" id="genStep1">
+              <div class="gen-icon">📊</div>
+              <div class="gen-info">
+                <div class="gen-label">Menganalisis distribusi kolom...</div>
+                <div class="gen-bar"><div class="gen-fill" id="genFill1"></div></div>
+              </div>
+              <span class="gen-status" id="genStatus1">⏳</span>
+            </div>
+            <div class="gen-step" id="genStep2">
+              <div class="gen-icon">🧮</div>
+              <div class="gen-info">
+                <div class="gen-label">Menghitung parameter statistik...</div>
+                <div class="gen-bar"><div class="gen-fill" id="genFill2"></div></div>
+              </div>
+              <span class="gen-status" id="genStatus2">⏳</span>
+            </div>
+            <div class="gen-step" id="genStep3">
+              <div class="gen-icon">🧬</div>
+              <div class="gen-info">
+                <div class="gen-label">Men-generate data sintetis...</div>
+                <div class="gen-bar"><div class="gen-fill" id="genFill3"></div></div>
+              </div>
+              <span class="gen-status" id="genStatus3">⏳</span>
+            </div>
+            <div class="gen-step" id="genStep4">
+              <div class="gen-icon">✅</div>
+              <div class="gen-info">
+                <div class="gen-label">Validasi kualitas & konsistensi...</div>
+                <div class="gen-bar"><div class="gen-fill" id="genFill4"></div></div>
+              </div>
+              <span class="gen-status" id="genStatus4">⏳</span>
+            </div>
+          </div>
+
+          <div class="gen-overall">
+            <div class="gen-overall-bar"><div class="gen-overall-fill" id="genOverallFill"></div></div>
+            <div class="gen-overall-text" id="genOverallText">0% selesai</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STEP 4: RESULTS ===== -->
+      <section class="tool-step hidden" id="step4">
+        <div class="card">
+          <h2 class="card-title">✅ Sintesis Selesai!</h2>
+          <p class="card-desc">Dataset sintetis berhasil dihasilkan. Berikut hasil dan statistik kualitasnya.</p>
+
+          <!-- Quality Report -->
+          <div class="quality-report" id="qualityReport">
+            <h3 class="report-title">📋 Laporan Kualitas</h3>
+            <div class="quality-grid" id="qualityGrid"></div>
+          </div>
+
+          <!-- Result Preview -->
+          <div class="result-preview">
+            <div class="result-tabs">
+              <button class="result-tab active" data-tab="synthetic">Data Sintetis</button>
+              <button class="result-tab" data-tab="comparison">Perbandingan</button>
+            </div>
+            <div class="tab-content active" id="tab-synthetic">
+              <div class="table-wrapper">
+                <table id="resultTable"></table>
+              </div>
+              <p class="table-note">Menampilkan 10 baris pertama dari <span id="totalRows">0</span> baris</p>
+            </div>
+            <div class="tab-content" id="tab-comparison">
+              <div class="comparison-grid" id="comparisonGrid"></div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn-secondary" id="btnNewSynthesis">🔄 Sintesis Baru</button>
+            <button class="btn-primary" id="btnDownload">📥 Download CSV</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="tool-footer">
+    <div class="container">
+      <p>© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
+    </div>
+  </footer>
+
+  <script src="synthesize.js"></script>
+</body>
+</html>
