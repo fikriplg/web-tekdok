@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="synthesize.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
@@ -113,74 +114,69 @@
       <!-- ===== STEP 2: CONFIGURE ===== -->
       <section class="tool-step hidden" id="step2">
         <div class="card">
-          <h2 class="card-title">⚙️ Konfigurasi Sintesis</h2>
-          <p class="card-desc">Atur parameter untuk proses augmentasi data Anda.</p>
+          <div class="card-header">
+            <h2 class="card-title">Konfigurasi Pengayaan Data</h2>
+            <p class="card-desc">Atur parameter model AI untuk menghasilkan dataset sintetis terbaik.</p>
+          </div>
 
           <div class="config-grid">
             <!-- Multiplier -->
             <div class="config-item">
-              <label class="config-label">Jumlah Data Output</label>
-              <p class="config-help">Tentukan kelipatan dari data asli</p>
+              <label class="config-label">Faktor Augmentasi</label>
+              <p class="config-help">Berapa kali lipat data yang ingin dihasilkan</p>
               <div class="multiplier-control">
-                <button class="mult-btn" id="multDown">−</button>
+                <button class="mult-btn" id="multMinus">−</button>
                 <div class="mult-display">
                   <span class="mult-value" id="multValue">2</span>
-                  <span class="mult-suffix">x lipat</span>
+                  <span class="mult-suffix">kali lipat</span>
                 </div>
-                <button class="mult-btn" id="multUp">+</button>
+                <button class="mult-btn" id="multPlus">+</button>
               </div>
-              <div class="output-estimate">
-                Estimasi output: <strong id="outputEstimate">0</strong> baris
-              </div>
+              <div class="output-estimate" id="outputEstimate">Estimasi: 60 baris output</div>
             </div>
 
-            <!-- Column Selection -->
+            <!-- AI Model Selection -->
             <div class="config-item">
-              <label class="config-label">Kolom yang Disintesis</label>
-              <p class="config-help">Pilih kolom yang ingin diaugmentasi</p>
-              <div class="column-list" id="columnList"></div>
-            </div>
-
-            <!-- Method -->
-            <div class="config-item">
-              <label class="config-label">Metode Sintesis</label>
-              <p class="config-help">Pilih algoritma yang digunakan</p>
-              <div class="method-options">
-                <label class="method-option selected">
-                  <input type="radio" name="method" value="statistical" checked>
-                  <div class="method-card">
-                    <div class="method-icon">📈</div>
-                    <div class="method-name">Statistical Sampling</div>
-                    <div class="method-desc">Pertahankan distribusi & korelasi antar kolom</div>
-                  </div>
+              <label class="config-label">Arsitektur AI Neural</label>
+              <p class="config-help">Pilih algoritma deep learning yang digunakan</p>
+              <div class="model-select">
+                <label class="model-radio">
+                  <input type="radio" name="ganModel" value="ctgan" checked>
+                  <span><strong>CTGAN</strong> (Standard)</span>
                 </label>
-                <label class="method-option">
-                  <input type="radio" name="method" value="bootstrap">
-                  <div class="method-card">
-                    <div class="method-icon">🔄</div>
-                    <div class="method-name">Bootstrap + Noise</div>
-                    <div class="method-desc">Resample dengan penambahan noise Gaussian</div>
-                  </div>
+                <label class="model-radio">
+                  <input type="radio" name="ganModel" value="tvae">
+                  <span><strong>TVAE</strong> (High Precision)</span>
                 </label>
               </div>
+              <p class="adv-help">TVAE sering kali lebih akurat untuk dataset kecil (< 100 baris).</p>
             </div>
 
-            <!-- Noise Level -->
+            <!-- Training Intensity -->
             <div class="config-item">
-              <label class="config-label">Level Variasi (Noise)</label>
-              <p class="config-help">Seberapa besar variasi dari data asli</p>
-              <input type="range" class="noise-slider" id="noiseSlider" min="0" max="100" value="15">
-              <div class="noise-labels">
-                <span>Identik</span>
-                <span class="noise-value" id="noiseValue">15%</span>
-                <span>Sangat Variatif</span>
+              <label class="config-label">Intensitas Training (Epochs)</label>
+              <p class="config-help">Semakin tinggi, semakin akurat namun lebih lambat</p>
+              <input type="range" id="epochSlider" min="100" max="1000" step="100" value="300" class="noise-slider">
+              <div class="epoch-labels">
+                <span>Cepat (100)</span>
+                <span class="epoch-value" id="epochValue">300</span>
+                <span>Akurat (1000)</span>
+              </div>
+            </div>
+
+            <!-- Column Selector -->
+            <div class="config-item full-width">
+              <label class="config-label">Pilih Kolom Target</label>
+              <p class="config-help">Hanya kolom terpilih yang akan diproses oleh AI</p>
+              <div class="column-list" id="columnList">
+                <!-- Injected by JS -->
               </div>
             </div>
           </div>
 
           <div class="step-actions">
-            <button class="btn-secondary" id="btnBack2">← Kembali</button>
-            <button class="btn-primary" id="btnNext2">Mulai Generate 🔬</button>
+            <button class="btn-secondary" id="back2">Kembali</button>
+            <button class="btn-primary" id="next2">Mulai Generate ⚡</button>
           </div>
         </div>
       </section>

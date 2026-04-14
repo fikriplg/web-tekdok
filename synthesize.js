@@ -1,11 +1,11 @@
-// ===== SYNTHMED SYNTHESIZER - FULLY FUNCTIONAL =====
+// ===== SYNTHMED SYNTHESIZER - AI NEURAL CORE =====
 
 let originalData = [];
 let originalHeaders = [];
 let syntheticData = [];
 let selectedColumns = [];
 let multiplier = 2;
-let noiseLevel = 15;
+let colStats = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   initUpload();
@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initNavToggle() {
   const toggle = document.getElementById('navToggle');
   const links = document.getElementById('navLinks');
+  if (!toggle) return;
   toggle.addEventListener('click', () => {
     toggle.classList.toggle('active');
     links.classList.toggle('active');
@@ -35,6 +36,8 @@ function initUpload() {
   const browse = document.getElementById('btnBrowse');
   const remove = document.getElementById('btnRemove');
   const next1 = document.getElementById('btnNext1');
+
+  if (!zone) return;
 
   // Click to browse
   zone.addEventListener('click', (e) => {
@@ -149,7 +152,6 @@ function parseCSV(text) {
 
   if (originalData.length === 0) { alert('Tidak ada data valid yang ditemukan.'); return; }
 
-  // Show preview
   showPreview();
   selectedColumns = [...originalHeaders];
   document.getElementById('btnNext1').classList.remove('disabled');
@@ -160,17 +162,11 @@ function parseCSVLine(line) {
   const result = [];
   let current = '';
   let inQuotes = false;
-
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
-    if (ch === '"') {
-      inQuotes = !inQuotes;
-    } else if (ch === ',' && !inQuotes) {
-      result.push(current.trim());
-      current = '';
-    } else {
-      current += ch;
-    }
+    if (ch === '"') inQuotes = !inQuotes;
+    else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+    else current += ch;
   }
   result.push(current.trim());
   return result;
@@ -181,7 +177,6 @@ function showPreview() {
   const preview = document.getElementById('dataPreview');
   const summary = document.getElementById('dataSummary');
 
-  // Build table
   let html = '<thead><tr>';
   originalHeaders.forEach(h => html += `<th>${escapeHtml(h)}</th>`);
   html += '</tr></thead><tbody>';
@@ -195,15 +190,13 @@ function showPreview() {
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Summary
-  const numericCols = originalHeaders.filter((_, i) => isNumericColumn(i)).length;
+  const numericCount = originalHeaders.filter((_, i) => isNumericColumn(i)).length;
   summary.innerHTML = `
     <span>📋 <strong>${originalHeaders.length}</strong> kolom</span>
     <span>📊 <strong>${originalData.length}</strong> baris</span>
-    <span>🔢 <strong>${numericCols}</strong> kolom numerik</span>
-    <span>📝 <strong>${originalHeaders.length - numericCols}</strong> kolom kategorikal</span>
+    <span>🔢 <strong>${numericCount}</strong> kolom numerik</span>
+    <span>📝 <strong>${originalHeaders.length - numericCount}</strong> kolom kategorikal</span>
   `;
-
   preview.classList.remove('hidden');
 }
 
@@ -220,48 +213,47 @@ function resetUpload() {
 
 // ===== STEP 2: CONFIGURATION =====
 function initConfig() {
-  const multUp = document.getElementById('multUp');
-  const multDown = document.getElementById('multDown');
-  const slider = document.getElementById('noiseSlider');
-  const back2 = document.getElementById('btnBack2');
-  const next2 = document.getElementById('btnNext2');
+  const multPlus = document.getElementById('multPlus');
+  const multMinus = document.getElementById('multMinus');
+  const back2 = document.getElementById('back2');
+  const next2 = document.getElementById('next2');
+  const epochSlider = document.getElementById('epochSlider');
 
-  multUp.addEventListener('click', () => { if (multiplier < 100) { multiplier++; updateMultiplier(); } });
-  multDown.addEventListener('click', () => { if (multiplier > 2) { multiplier--; updateMultiplier(); } });
+  if (multPlus) {
+    multPlus.addEventListener('click', () => { if (multiplier < 100) { multiplier++; updateMultiplier(); } });
+    multMinus.addEventListener('click', () => { if (multiplier > 2) { multiplier--; updateMultiplier(); } });
+  }
 
-  slider.addEventListener('input', (e) => {
-    noiseLevel = parseInt(e.target.value);
-    document.getElementById('noiseValue').textContent = noiseLevel + '%';
-  });
-
-  // Method selection
-  document.querySelectorAll('.method-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.method-option').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
+  if (epochSlider) {
+    epochSlider.addEventListener('input', (e) => {
+      document.getElementById('epochValue').textContent = e.target.value;
     });
-  });
+  }
 
-  back2.addEventListener('click', () => goToStep(1));
-  next2.addEventListener('click', () => {
-    selectedColumns = [];
-    document.querySelectorAll('.col-chip.selected').forEach(chip => {
-      selectedColumns.push(chip.dataset.col);
+  if (back2) back2.addEventListener('click', () => goToStep(1));
+  if (next2) {
+    next2.addEventListener('click', () => {
+      selectedColumns = [];
+      document.querySelectorAll('.col-chip.selected').forEach(chip => {
+        selectedColumns.push(chip.dataset.col);
+      });
+      if (selectedColumns.length === 0) { alert('Pilih minimal 1 kolom!'); return; }
+      goToStep(3);
+      startGeneration();
     });
-    if (selectedColumns.length === 0) { alert('Pilih minimal 1 kolom!'); return; }
-    goToStep(3);
-    startGeneration();
-  });
+  }
 }
 
 function updateMultiplier() {
-  document.getElementById('multValue').textContent = multiplier;
-  document.getElementById('outputEstimate').textContent =
-    (originalData.length * multiplier).toLocaleString('id-ID');
+  const multEl = document.getElementById('multValue');
+  const estEl = document.getElementById('outputEstimate');
+  if (multEl) multEl.textContent = multiplier;
+  if (estEl) estEl.textContent = `Estimasi: ${(originalData.length * multiplier).toLocaleString('id-ID')} baris output`;
 }
 
 function buildColumnChips() {
   const list = document.getElementById('columnList');
+  if (!list) return;
   list.innerHTML = '';
   originalHeaders.forEach((col, i) => {
     const type = isNumericColumn(i) ? 'num' : 'cat';
@@ -275,202 +267,207 @@ function buildColumnChips() {
 }
 
 // ===== STEP 3: GENERATION =====
-function startGeneration() {
-  const method = document.querySelector('input[name="method"]:checked').value;
+let progressTimer = null;
+
+async function startGeneration() {
   const totalTarget = originalData.length * multiplier;
 
-  // Animate generation steps
-  animateGeneration(method, totalTarget);
-}
+  resetGenerationUI();
+  document.getElementById('genStep1').classList.add('active');
 
-async function animateGeneration(method, totalTarget) {
-  // Step 1: Analyze
-  await animateStep(1, 800);
+  const formData = new FormData();
+  let csvContent = originalHeaders.join(',') + '\n' + 
+      originalData.map(row => row.map(v => `"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+    
+  const epochs = document.getElementById('epochSlider').value;
+  const modelType = document.querySelector('input[name="ganModel"]:checked').value;
+    
+  formData.append('file', blob, 'dataset.csv');
+  formData.append('epochs', epochs);
+  formData.append('model_type', modelType);
 
-  // Step 2: Calculate parameters
-  await animateStep(2, 1000);
+  try {
+    const response = await fetch('http://localhost:8000/train-gan', {
+      method: 'POST',
+      body: formData
+    });
 
-  // Step 3: Generate
-  const genFill3 = document.getElementById('genFill3');
-  document.getElementById('genStep3').classList.add('active');
+    if (!response.ok) throw new Error('Backend error: ' + response.status);
 
-  // Actually generate the data
-  if (method === 'statistical') {
-    syntheticData = generateStatistical(totalTarget);
-  } else {
-    syntheticData = generateBootstrap(totalTarget);
-  }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let trainingDone = false;
 
-  await animateStep(3, 1200);
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
 
-  // Step 4: Validate
-  await animateStep(4, 600);
-
-  // Done - go to results
-  setTimeout(() => goToStep(4), 500);
-  showResults();
-}
-
-async function animateStep(stepNum, duration) {
-  return new Promise(resolve => {
-    const stepEl = document.getElementById(`genStep${stepNum}`);
-    const fill = document.getElementById(`genFill${stepNum}`);
-    const status = document.getElementById(`genStatus${stepNum}`);
-    const overall = document.getElementById('genOverallFill');
-    const overallText = document.getElementById('genOverallText');
-
-    stepEl.classList.add('active');
-
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 5;
-      fill.style.width = Math.min(progress, 100) + '%';
-      overall.style.width = ((stepNum - 1) * 25 + progress / 4) + '%';
-      overallText.textContent = Math.round((stepNum - 1) * 25 + progress / 4) + '% selesai';
-
-      if (progress >= 100) {
-        clearInterval(interval);
-        stepEl.classList.add('done');
-        status.textContent = '✅';
-        if (stepNum < 4) {
-          const line = document.querySelectorAll('.step-line')[stepNum - 1];
-          if (line) line.classList.add('done');
-        }
-        resolve();
-      }
-    }, duration / 20);
-  });
-}
-
-// ===== SYNTHESIS ALGORITHMS =====
-function generateStatistical(targetCount) {
-  const colStats = analyzeColumns();
-  const result = [];
-
-  for (let i = 0; i < targetCount; i++) {
-    const row = [];
-    originalHeaders.forEach((header, colIdx) => {
-      if (!selectedColumns.includes(header)) {
-        // Not selected: copy from random original row
-        const srcRow = originalData[Math.floor(Math.random() * originalData.length)];
-        row.push(srcRow[colIdx]);
-      } else {
-        const stats = colStats[colIdx];
-        if (stats.isNumeric) {
-          // Generate from normal distribution with original mean & std
-          let val = gaussianRandom(stats.mean, stats.std * (1 + noiseLevel / 100));
-          // Clamp to observed range (with some flexibility)
-          const range = stats.max - stats.min;
-          val = Math.max(stats.min - range * 0.05, Math.min(stats.max + range * 0.05, val));
-          // Match original precision
-          row.push(stats.isInteger ? Math.round(val).toString() : val.toFixed(stats.decimals).toString());
-        } else {
-          // Categorical: weighted random sampling
-          const r = Math.random();
-          let cumulative = 0;
-          let chosen = stats.categories[0].value;
-          for (const cat of stats.categories) {
-            cumulative += cat.probability;
-            if (r <= cumulative) { chosen = cat.value; break; }
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const msg = JSON.parse(line);
+          handleStreamMessage(msg);
+          if (msg.type === 'complete') trainingDone = true;
+          if (msg.type === 'error') {
+            stopProgressSimulation();
+            alert('❌ Error backend: ' + msg.message);
+            goToStep(2);
+            return;
           }
-          row.push(chosen);
-        }
+        } catch(e) { console.warn('JSON parse error:', e, line); }
       }
-    });
-    result.push(row);
-  }
-
-  return result;
-}
-
-function generateBootstrap(targetCount) {
-  const colStats = analyzeColumns();
-  const result = [];
-
-  for (let i = 0; i < targetCount; i++) {
-    // Pick a random source row
-    const srcRow = [...originalData[Math.floor(Math.random() * originalData.length)]];
-
-    // Add noise to selected numeric columns
-    originalHeaders.forEach((header, colIdx) => {
-      if (selectedColumns.includes(header) && colStats[colIdx].isNumeric) {
-        const stats = colStats[colIdx];
-        const noise = gaussianRandom(0, stats.std * (noiseLevel / 100));
-        let val = parseFloat(srcRow[colIdx]) + noise;
-        const range = stats.max - stats.min;
-        val = Math.max(stats.min - range * 0.05, Math.min(stats.max + range * 0.05, val));
-        srcRow[colIdx] = stats.isInteger ? Math.round(val).toString() : val.toFixed(stats.decimals).toString();
-      }
-    });
-
-    result.push(srcRow);
-  }
-
-  return result;
-}
-
-function analyzeColumns() {
-  return originalHeaders.map((_, colIdx) => {
-    const values = originalData.map(row => row[colIdx]);
-    const numericValues = values.map(v => parseFloat(v)).filter(v => !isNaN(v));
-
-    if (numericValues.length > values.length * 0.7) {
-      // Numeric column
-      const mean = numericValues.reduce((a, b) => a + b, 0) / numericValues.length;
-      const variance = numericValues.reduce((a, b) => a + (b - mean) ** 2, 0) / numericValues.length;
-      const std = Math.sqrt(variance) || 0.01;
-      const isInteger = numericValues.every(v => Number.isInteger(v));
-      let maxDecimals = 0;
-      if (!isInteger) {
-        values.forEach(v => {
-          const parts = v.split('.');
-          if (parts[1]) maxDecimals = Math.max(maxDecimals, parts[1].length);
-        });
-      }
-
-      return {
-        isNumeric: true,
-        mean, std,
-        min: Math.min(...numericValues),
-        max: Math.max(...numericValues),
-        isInteger,
-        decimals: Math.min(maxDecimals, 4)
-      };
-    } else {
-      // Categorical column
-      const freq = {};
-      values.forEach(v => { freq[v] = (freq[v] || 0) + 1; });
-      const total = values.length;
-      const categories = Object.entries(freq).map(([value, count]) => ({
-        value,
-        probability: count / total
-      })).sort((a, b) => b.probability - a.probability);
-
-      return { isNumeric: false, categories };
     }
-  });
+
+    stopProgressSimulation();
+
+    if (trainingDone) {
+      // Step 4: Fetch synthetic data
+      updateStepUI(4, 50, 'Mengambil data sintetis dari model...');
+      document.getElementById('genStep4').classList.add('active');
+      await fetchSynthesis(totalTarget);
+    } else {
+      alert('❌ Training selesai tanpa konfirmasi dari server.');
+      goToStep(2);
+    }
+
+  } catch (e) {
+    stopProgressSimulation();
+    console.error('Generation error:', e);
+    alert('❌ Gagal menghubungi backend AI!\nPastikan server Python berjalan:\nuvicorn app:app --reload --port 8000');
+    goToStep(2);
+  }
 }
 
-function gaussianRandom(mean, std) {
-  // Box-Muller transform
-  let u1 = Math.random();
-  let u2 = Math.random();
-  while (u1 === 0) u1 = Math.random();
-  const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-  return mean + z * std;
+function handleStreamMessage(msg) {
+  const overall = document.getElementById('genOverallFill');
+  const overallText = document.getElementById('genOverallText');
+
+  if (msg.type === 'status') {
+    const step = msg.step || 1;
+    
+    if (step === 1) {
+      updateStepUI(1, 100, msg.message);
+      overall.style.width = '15%';
+      overallText.textContent = '15% selesai';
+    } else if (step === 2) {
+      // Mark step 1 done, activate step 2
+      document.getElementById('genStep1').classList.add('done');
+      document.getElementById('genStatus1').textContent = '✅';
+      document.getElementById('genStep2').classList.add('active');
+      updateStepUI(2, 100, msg.message);
+      overall.style.width = '30%';
+      overallText.textContent = '30% selesai';
+    } else if (step === 3) {
+      document.getElementById('genStep2').classList.add('done');
+      document.getElementById('genStatus2').textContent = '✅';
+      document.getElementById('genStep3').classList.add('active');
+      updateStepUI(3, 10, msg.message);
+      overall.style.width = '35%';
+      overallText.textContent = '35% selesai';
+    }
+    
+  } else if (msg.type === 'training_start') {
+    // Mark steps 1,2 as done, step 3 active
+    document.getElementById('genStep1').classList.add('done');
+    document.getElementById('genStatus1').textContent = '✅';
+    document.getElementById('genStep2').classList.add('done');
+    document.getElementById('genStatus2').textContent = '✅';
+    document.getElementById('genStep3').classList.add('active');
+    
+    updateStepUI(3, 5, msg.message);
+    
+    // Start simulated progress animation
+    startProgressSimulation(msg.epochs || 300);
+    
+  } else if (msg.type === 'complete') {
+    stopProgressSimulation();
+    
+    // Mark step 3 as done
+    updateStepUI(3, 100, msg.message);
+    document.getElementById('genStep3').classList.add('done');
+    document.getElementById('genStatus3').textContent = '✅';
+    
+    // Activate step 4
+    document.getElementById('genStep4').classList.add('active');
+    updateStepUI(4, 30, 'Model siap, mengambil data...');
+    
+    overall.style.width = '85%';
+    overallText.textContent = '85% selesai';
+    
+  } else if (msg.type === 'error') {
+    stopProgressSimulation();
+    console.error('Backend error:', msg.message);
+  }
 }
 
-function isNumericColumn(colIdx) {
-  const values = originalData.map(row => parseFloat(row[colIdx]));
-  const numericCount = values.filter(v => !isNaN(v)).length;
-  return numericCount > originalData.length * 0.7;
+function startProgressSimulation(epochs) {
+  let simProgress = 5;
+  // Estimate: ~0.5s per epoch for small datasets, slower for large
+  const estimatedSeconds = Math.max(10, epochs * 0.3);
+  const incrementPerTick = 85 / (estimatedSeconds * 2); // tick every 500ms, go up to ~90%
+  
+  progressTimer = setInterval(() => {
+    if (simProgress < 90) {
+      simProgress += incrementPerTick * (1 - simProgress / 100); // slow down as it approaches 90%
+      simProgress = Math.min(90, simProgress);
+      
+      updateStepUI(3, simProgress, `Neural Training: ${Math.round(simProgress)}%`);
+      
+      const overallVal = 35 + (simProgress * 0.5);
+      document.getElementById('genOverallFill').style.width = overallVal + '%';
+      document.getElementById('genOverallText').textContent = Math.round(overallVal) + '% selesai';
+    }
+  }, 500);
+}
+
+function stopProgressSimulation() {
+  if (progressTimer) {
+    clearInterval(progressTimer);
+    progressTimer = null;
+  }
+}
+
+async function fetchSynthesis(totalTarget) {
+  try {
+    const genRes = await axios.post('http://localhost:8000/synthesize-gan',
+      new URLSearchParams({ num_rows: totalTarget.toString() })
+    );
+    syntheticData = genRes.data.synthetic_data.map(row => {
+      return originalHeaders.map(h => row[h]);
+    });
+    
+    updateStepUI(4, 100, 'Data sintetis berhasil dihasilkan!');
+    document.getElementById('genStep4').classList.add('done');
+    document.getElementById('genStatus4').textContent = '✅';
+    document.getElementById('genOverallFill').style.width = '100%';
+    document.getElementById('genOverallText').textContent = '100% Selesai! 🎉';
+    
+    setTimeout(() => { goToStep(4); showResults(); }, 1000);
+  } catch (e) {
+    console.error('Synthesis error:', e);
+    alert('❌ Gagal men-generate data sintetis dari model.\nError: ' + (e.response?.data?.detail || e.message));
+    goToStep(2);
+  }
+}
+
+
+function updateStepUI(stepNum, percent, label) {
+  const fill = document.getElementById(`genFill${stepNum}`);
+  const labelEl = document.querySelector(`#genStep${stepNum} .gen-label`);
+  if (fill) fill.style.width = percent + '%';
+  if (labelEl && label) labelEl.textContent = label;
 }
 
 // ===== STEP 4: RESULTS =====
 function showResults() {
   document.getElementById('totalRows').textContent = syntheticData.length.toLocaleString('id-ID');
 
-  // Build result table
   const table = document.getElementById('resultTable');
   let html = '<thead><tr>';
   originalHeaders.forEach(h => html += `<th>${escapeHtml(h)}</th>`);
@@ -483,13 +480,10 @@ function showResults() {
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Quality Report
+  // Show loading state, then fetch real quality metrics from backend
   buildQualityReport();
-
-  // Comparison
   buildComparison();
 
-  // Download button
   document.getElementById('btnDownload').addEventListener('click', downloadCSV);
   document.getElementById('btnNewSynthesis').addEventListener('click', () => {
     resetUpload();
@@ -499,53 +493,124 @@ function showResults() {
   });
 }
 
-function buildQualityReport() {
+async function buildQualityReport() {
   const grid = document.getElementById('qualityGrid');
-  const colStats = analyzeColumns();
+  
+  // Show loading state
+  grid.innerHTML = `
+    <div class="quality-item" style="grid-column: 1/-1; padding: 32px;">
+      <div class="quality-score good" style="font-size: 1.2rem;">⏳ Mengevaluasi kualitas...</div>
+      <div class="quality-label">Menghitung KSComplement, TVComplement, CorrelationSimilarity via SDMetrics</div>
+    </div>
+  `;
 
-  // Calculate quality metrics
-  const numericCols = originalHeaders.filter((_, i) => colStats[i].isNumeric);
-  let totalSimilarity = 0;
-  let count = 0;
+  try {
+    // Call backend SDMetrics evaluation
+    const evalRes = await axios.post('http://localhost:8000/evaluate',
+      new URLSearchParams({ num_rows: originalData.length.toString() })
+    );
+    
+    const data = evalRes.data;
+    const overall = data.overall_score;
+    const shapesScore = data.column_shapes_score;
+    const pairsScore = data.column_pair_trends_score;
+    
+    // Determine score class
+    const scoreClass = (s) => s >= 80 ? 'good' : s >= 60 ? 'ok' : '';
+    
+    // Build quality grid with real SDMetrics scores
+    let html = `
+      <div class="quality-item">
+        <div class="quality-score ${scoreClass(overall)}">${overall.toFixed(1)}%</div>
+        <div class="quality-label">Skor Keseluruhan (SDMetrics)</div>
+      </div>
+      <div class="quality-item">
+        <div class="quality-score ${scoreClass(shapesScore)}">${shapesScore.toFixed(1)}%</div>
+        <div class="quality-label">Column Shapes (KS + TV)</div>
+      </div>
+      <div class="quality-item">
+        <div class="quality-score ${scoreClass(pairsScore)}">${pairsScore.toFixed(1)}%</div>
+        <div class="quality-label">Pair Trends (Korelasi)</div>
+      </div>
+      <div class="quality-item">
+        <div class="quality-score good">${syntheticData.length.toLocaleString('id-ID')}</div>
+        <div class="quality-label">Total Baris × ${multiplier}x</div>
+      </div>
+    `;
+    
+    // Per-column breakdown
+    if (data.column_details && data.column_details.length > 0) {
+      html += `
+        <div class="quality-item full-width">
+          <div style="font-weight:700; margin-bottom:12px; font-size:0.95rem;">📊 Skor Per Kolom</div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:8px;">
+      `;
+      data.column_details.forEach(col => {
+        const barColor = col.score >= 80 ? 'var(--emerald-400)' : col.score >= 60 ? '#f59e0b' : '#ef4444';
+        html += `
+          <div style="padding:8px 12px; background:rgba(13,148,136,0.04); border-radius:8px; border:1px solid rgba(13,148,136,0.08);">
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:4px;">
+              <span style="color:var(--text-secondary);">${escapeHtml(col.column)}</span>
+              <span style="font-weight:700; color:${barColor};">${col.score.toFixed(1)}%</span>
+            </div>
+            <div style="height:4px; background:rgba(148,163,184,0.1); border-radius:2px; overflow:hidden;">
+              <div style="height:100%; width:${col.score}%; background:${barColor}; border-radius:2px;"></div>
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${col.metric}</div>
+          </div>
+        `;
+      });
+      html += `</div></div>`;
+    }
+    
+    grid.innerHTML = html;
+    
+  } catch (e) {
+    console.error('Quality evaluation error:', e);
+    // Fallback to local estimation
+    grid.innerHTML = `
+      <div class="quality-item" style="grid-column: 1/-1;">
+        <div class="quality-score ok">⚠️</div>
+        <div class="quality-label">Gagal menghubungi evaluasi SDMetrics. Menggunakan estimasi lokal.</div>
+      </div>
+    `;
+    buildQualityReportFallback();
+  }
+}
 
-  numericCols.forEach((header, i) => {
-    const colIdx = originalHeaders.indexOf(header);
-    const origValues = originalData.map(row => parseFloat(row[colIdx])).filter(v => !isNaN(v));
-    const synthValues = syntheticData.map(row => parseFloat(row[colIdx])).filter(v => !isNaN(v));
-
-    const origMean = origValues.reduce((a, b) => a + b, 0) / origValues.length;
-    const synthMean = synthValues.reduce((a, b) => a + b, 0) / synthValues.length;
-
-    const similarity = 100 - Math.min(100, Math.abs(origMean - synthMean) / Math.abs(origMean || 1) * 100);
-    totalSimilarity += similarity;
+function buildQualityReportFallback() {
+  // Fallback: use local mean/std comparison if backend evaluation fails
+  const grid = document.getElementById('qualityGrid');
+  colStats = analyzeColumns();
+  const numericHeaders = originalHeaders.filter((_, i) => colStats[i].isNumeric);
+  let totalSim = 0, count = 0;
+  numericHeaders.forEach(header => {
+    const idx = originalHeaders.indexOf(header);
+    const stats = colStats[idx];
+    const sv = syntheticData.map(r => parseFloat(r[idx])).filter(v => !isNaN(v));
+    const sm = sv.reduce((a,b) => a+b, 0) / sv.length;
+    const ss = Math.sqrt(sv.reduce((a,b) => a + (b-sm)**2, 0) / sv.length) || 0.01;
+    const md = Math.abs(stats.mean - sm) / (Math.abs(stats.mean) || 1);
+    const sd = Math.abs(stats.std - ss) / (Math.abs(stats.std) || 0.1);
+    totalSim += 100 * (1 - Math.min(1, md*0.6 + sd*0.4));
     count++;
   });
-
-  const avgSimilarity = count > 0 ? (totalSimilarity / count) : 95;
-
+  const avg = count > 0 ? totalSim / count : 0;
   grid.innerHTML = `
     <div class="quality-item">
-      <div class="quality-score good">${avgSimilarity.toFixed(1)}%</div>
-      <div class="quality-label">Distribusi Similarity</div>
+      <div class="quality-score ${avg >= 80 ? 'good' : 'ok'}">${avg.toFixed(1)}%</div>
+      <div class="quality-label">Estimasi Lokal (Mean/Std)</div>
     </div>
     <div class="quality-item">
       <div class="quality-score good">${syntheticData.length.toLocaleString('id-ID')}</div>
-      <div class="quality-label">Total Baris Generated</div>
-    </div>
-    <div class="quality-item">
-      <div class="quality-score good">${selectedColumns.length}</div>
-      <div class="quality-label">Kolom Disintesis</div>
-    </div>
-    <div class="quality-item">
-      <div class="quality-score good">${multiplier}x</div>
-      <div class="quality-label">Faktor Augmentasi</div>
+      <div class="quality-label">Total Baris × ${multiplier}x</div>
     </div>
   `;
 }
 
 function buildComparison() {
   const grid = document.getElementById('comparisonGrid');
-  const colStats = analyzeColumns();
+  colStats = analyzeColumns();
   let html = '';
 
   originalHeaders.forEach((header, colIdx) => {
@@ -553,133 +618,112 @@ function buildComparison() {
     const stats = colStats[colIdx];
 
     if (stats.isNumeric) {
-      const origValues = originalData.map(row => parseFloat(row[colIdx])).filter(v => !isNaN(v));
       const synthValues = syntheticData.map(row => parseFloat(row[colIdx])).filter(v => !isNaN(v));
-
-      const origMean = (origValues.reduce((a, b) => a + b, 0) / origValues.length).toFixed(2);
       const synthMean = (synthValues.reduce((a, b) => a + b, 0) / synthValues.length).toFixed(2);
-      const origMin = Math.min(...origValues).toFixed(2);
+      const synthStd = Math.sqrt(synthValues.reduce((a,b) => a + (b - parseFloat(synthMean))**2, 0) / synthValues.length).toFixed(2);
       const synthMin = Math.min(...synthValues).toFixed(2);
-      const origMax = Math.max(...origValues).toFixed(2);
       const synthMax = Math.max(...synthValues).toFixed(2);
 
       html += `
         <div class="comp-card">
-          <div class="comp-col-name">📊 ${escapeHtml(header)} (numerik)</div>
-          <div class="comp-row"><span>Mean (asli)</span><span>${origMean}</span></div>
-          <div class="comp-row"><span>Mean (sintetis)</span><span>${synthMean}</span></div>
-          <div class="comp-row"><span>Min (asli)</span><span>${origMin}</span></div>
-          <div class="comp-row"><span>Min (sintetis)</span><span>${synthMin}</span></div>
-          <div class="comp-row"><span>Max (asli)</span><span>${origMax}</span></div>
-          <div class="comp-row"><span>Max (sintetis)</span><span>${synthMax}</span></div>
-        </div>
-      `;
-    } else {
-      const origFreq = {};
-      originalData.forEach(row => { origFreq[row[colIdx]] = (origFreq[row[colIdx]] || 0) + 1; });
-      const synthFreq = {};
-      syntheticData.forEach(row => { synthFreq[row[colIdx]] = (synthFreq[row[colIdx]] || 0) + 1; });
-
-      const topCategories = Object.keys(origFreq).slice(0, 4);
-      let rows = '';
-      topCategories.forEach(cat => {
-        const origPct = ((origFreq[cat] || 0) / originalData.length * 100).toFixed(1);
-        const synthPct = ((synthFreq[cat] || 0) / syntheticData.length * 100).toFixed(1);
-        rows += `<div class="comp-row"><span>${escapeHtml(cat)}</span><span>${origPct}% → ${synthPct}%</span></div>`;
-      });
-
-      html += `
-        <div class="comp-card">
-          <div class="comp-col-name">📝 ${escapeHtml(header)} (kategorikal)</div>
-          ${rows}
+          <div class="comp-col-name">📊 ${escapeHtml(header)}</div>
+          <div class="comp-row"><span>Mean (asli → AI)</span><span>${stats.mean.toFixed(2)} → ${synthMean}</span></div>
+          <div class="comp-row"><span>Std (asli → AI)</span><span>${stats.std.toFixed(2)} → ${synthStd}</span></div>
+          <div class="comp-row"><span>Min (asli → AI)</span><span>${stats.min.toFixed(2)} → ${synthMin}</span></div>
+          <div class="comp-row"><span>Max (asli → AI)</span><span>${stats.max.toFixed(2)} → ${synthMax}</span></div>
         </div>
       `;
     }
   });
-
   grid.innerHTML = html;
 }
 
-function downloadCSV() {
-  let csv = originalHeaders.join(',') + '\n';
-  syntheticData.forEach(row => {
-    csv += row.map(val => {
-      if (val.includes(',') || val.includes('"') || val.includes('\n')) {
-        return '"' + val.replace(/"/g, '""') + '"';
-      }
-      return val;
-    }).join(',') + '\n';
-  });
 
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `synthmed_output_${multiplier}x_${Date.now()}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+function analyzeColumns() {
+  return originalHeaders.map((_, colIdx) => {
+    const values = originalData.map(row => row[colIdx]);
+    const numericValues = values.map(v => parseFloat(v)).filter(v => !isNaN(v));
+
+    if (numericValues.length > values.length * 0.7) {
+      const mean = numericValues.reduce((a, b) => a + b, 0) / numericValues.length;
+      const variance = numericValues.reduce((a, b) => a + (b - mean) ** 2, 0) / numericValues.length;
+      return {
+        isNumeric: true, mean, std: Math.sqrt(variance) || 0.01,
+        min: Math.min(...numericValues), max: Math.max(...numericValues)
+      };
+    } else {
+      return { isNumeric: false };
+    }
+  });
 }
 
-// ===== STEP NAVIGATION =====
+function isNumericColumn(colIdx) {
+  const values = originalData.map(row => parseFloat(row[colIdx]));
+  return values.filter(v => !isNaN(v)).length > originalData.length * 0.7;
+}
+
+// ===== UTILS =====
 function goToStep(stepNum) {
-  // Hide all steps
   document.querySelectorAll('.tool-step').forEach(s => s.classList.add('hidden'));
   document.getElementById(`step${stepNum}`).classList.remove('hidden');
-
-  // Update stepper
   document.querySelectorAll('.stepper .step').forEach((s, i) => {
     s.classList.remove('active', 'done');
     if (i + 1 < stepNum) s.classList.add('done');
     if (i + 1 === stepNum) s.classList.add('active');
   });
-  document.querySelectorAll('.step-line').forEach((l, i) => {
-    l.classList.toggle('done', i + 1 < stepNum);
-  });
-
-  // Prepare step content
-  if (stepNum === 2) {
-    buildColumnChips();
-    updateMultiplier();
-  }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelectorAll('.step-line').forEach((l, i) => l.classList.toggle('done', i + 1 < stepNum));
+  if (stepNum === 2) buildColumnChips();
 }
 
 function resetGenerationUI() {
-  for (let i = 1; i <= 4; i++) {
-    const step = document.getElementById(`genStep${i}`);
-    const fill = document.getElementById(`genFill${i}`);
-    const status = document.getElementById(`genStatus${i}`);
-    step.classList.remove('active', 'done');
-    fill.style.width = '0';
-    status.textContent = '⏳';
-  }
-  document.getElementById('genOverallFill').style.width = '0';
+  document.querySelectorAll('.gen-step').forEach(s => s.classList.remove('active', 'done'));
+  document.querySelectorAll('.gen-fill').forEach(f => f.style.width = '0%');
+  document.querySelectorAll('.gen-status').forEach(s => s.textContent = '⏳');
+  document.getElementById('genOverallFill').style.width = '0%';
   document.getElementById('genOverallText').textContent = '0% selesai';
-  document.querySelectorAll('.step-line').forEach(l => l.classList.remove('done'));
 }
 
-// ===== TABS =====
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function initTabs() {
-  document.querySelectorAll('.result-tab').forEach(tab => {
+  const tabs = document.querySelectorAll('.result-tab');
+  tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const targetId = 'tab-' + tab.dataset.tab;
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
     });
   });
 }
 
-// ===== UTILITIES =====
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function formatFileSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+function downloadCSV() {
+  if (syntheticData.length === 0) return;
+  let csv = originalHeaders.join(',') + '\n';
+  syntheticData.forEach(row => {
+    csv += row.map(val => {
+      const s = String(val);
+      return s.includes(',') ? `"${s}"` : s;
+    }).join(',') + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `synthmed_synthetic_${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }

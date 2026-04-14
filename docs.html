@@ -21,8 +21,8 @@
       </a>
       <div class="nav-links" id="navLinks">
         <a href="index.html">Beranda</a>
-        <a href="synthesize.html">Synthesizer</a>
         <a href="docs.html" class="active">Dokumentasi</a>
+        <a href="synthesize.html">Synthesizer</a>
         <a href="synthesize.html" class="nav-cta">Mulai Riset</a>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
@@ -195,64 +195,50 @@
     <section class="doc-section" id="methods">
       <div class="section-head">
         <span class="sec-badge">Referensi Teknis</span>
-        <h2>Metode Sintesis</h2>
+        <h2>Arsitektur Neural AI</h2>
       </div>
       <div class="section-body">
-        <p>SynthMed menyediakan 2 metode sintesis data. Pilih sesuai kebutuhan riset Anda:</p>
+        <p>SynthMed menggunakan teknologi Deep Learning terbaru (Generative Adversarial Networks & Variational Autoencoders) untuk mensintesis data medis. Pilih model yang sesuai dengan karakteristik dataset Anda:</p>
 
         <div class="compare-row">
           <div class="compare-card">
             <div class="cc-header blue">
-              <span>📈</span>
-              <h4>Statistical Sampling</h4>
+              <span>🧬</span>
+              <h4>CTGAN Model</h4>
             </div>
-            <p>Menganalisis distribusi statistik setiap kolom (mean, std, min, max) lalu menghasilkan data baru dari distribusi tersebut.</p>
+            <p>Model Generative Adversarial Network yang dioptimalkan untuk data tabular. Menggunakan generator dan discriminator untuk menciptakan data baru yang identik secara statistik.</p>
             <h5>🔧 Cara Kerja:</h5>
             <ol>
-              <li>Hitung mean (μ) dan standar deviasi (σ) setiap kolom numerik</li>
-              <li>Generate nilai baru: <code>X ~ N(μ, σ × (1 + noise))</code></li>
-              <li>Untuk kategorikal: weighted random sampling berdasarkan frekuensi</li>
-              <li>Clamp ke rentang [min-5%, max+5%]</li>
+              <li>Identifikasi korelasi antar kolom (multivariate analysis)</li>
+              <li>Training Neural Network untuk menebak distribusi asli</li>
+              <li>Generasi data sintetis dengan high-diversity</li>
             </ol>
             <h5>✅ Kelebihan:</h5>
             <ul>
-              <li>Data benar-benar baru, bukan duplikasi</li>
-              <li>Distribusi statistik terjaga</li>
-              <li>Cocok untuk dataset besar</li>
+              <li>Mampu menangani dataset besar (>1000 baris)</li>
+              <li>Sangat variatif dan inovatif dalam menghasilkan data baru</li>
             </ul>
-            <h5>⚠️ Kekurangan:</h5>
-            <ul>
-              <li>Korelasi antar kolom bisa berkurang</li>
-              <li>Kurang cocok untuk data non-normal</li>
-            </ul>
-            <div class="cc-best">Terbaik untuk: Dataset numerik dengan distribusi normal</div>
+            <div class="cc-best">Terbaik untuk: Dataset besar & kompleks</div>
           </div>
 
           <div class="compare-card">
             <div class="cc-header green">
-              <span>🔄</span>
-              <h4>Bootstrap + Noise</h4>
+              <span>🔬</span>
+              <h4>TVAE Model</h4>
             </div>
-            <p>Mengambil baris acak dari data asli, lalu menambahkan noise Gaussian pada kolom numerik.</p>
+            <p>Tabular Variational Autoencoder yang menggunakan sistem encoder-decoder untuk memetakan data ke ruang laten.</p>
             <h5>🔧 Cara Kerja:</h5>
             <ol>
-              <li>Random sampling with replacement dari data asli</li>
-              <li>Tambahkan noise: <code>X' = X + N(0, σ × noise)</code></li>
-              <li>Kolom kategorikal tetap tidak berubah</li>
-              <li>Clamp ke rentang yang valid</li>
+              <li>Encoder mengompresi data asli ke bentuk matematis sederhana</li>
+              <li>Decoder membangun ulang data dari representasi laten tersebut</li>
+              <li>Regulasi statistik untuk menjaga akurasi distribusi</li>
             </ol>
             <h5>✅ Kelebihan:</h5>
             <ul>
-              <li>Korelasi antar kolom terjaga</li>
-              <li>Pola data asli dipertahankan</li>
-              <li>Aman untuk data non-normal</li>
+              <li>Sangat akurat (Similarity Score tinggi)</li>
+              <li>Sangat stabil untuk dataset kecil (30-500 baris)</li>
             </ul>
-            <h5>⚠️ Kekurangan:</h5>
-            <ul>
-              <li>Data sintetis lebih mirip satu sama lain</li>
-              <li>Variasi lebih terbatas</li>
-            </ul>
-            <div class="cc-best">Terbaik untuk: Dataset kecil yang perlu menjaga pola</div>
+            <div class="cc-best">Terbaik untuk: Dataset kecil & sensitif (EHR)</div>
           </div>
         </div>
 
