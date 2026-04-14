@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" id="htmlRoot">
 
 <head>
   <meta charset="UTF-8">
@@ -35,12 +35,17 @@
         SynthMed
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="#features">Fitur</a>
-        <a href="#how-it-works">Cara Kerja</a>
-        <a href="#datasets">Dataset</a>
-        <a href="#researchers">Untuk Peneliti</a>
-        <a href="synthesize.html" class="nav-cta">Mulai Riset</a>
+        <a href="#features" data-i18n="nav_features">Fitur</a>
+        <a href="#how-it-works" data-i18n="nav_how">Cara Kerja</a>
+        <a href="#datasets" data-i18n="nav_datasets">Dataset</a>
+        <a href="#researchers" data-i18n="nav_researchers">Untuk Peneliti</a>
+        <a href="#live-demo" data-i18n="nav_demo">Live Demo</a>
+        <a href="synthesize.html" class="nav-cta" data-i18n="nav_cta">Mulai Riset</a>
       </div>
+      <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
+        <span class="lang-flag">🇮🇩</span>
+        <span class="lang-text" id="langText">ID</span>
+      </button>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
         <span></span>
         <span></span>
@@ -57,96 +62,87 @@
       <div class="hero-content">
         <div class="hero-badge">
           <span class="badge-dot"></span>
-          Open Platform — Gratis untuk Semua Peneliti
+          <span data-i18n="hero_badge">Open Platform — Gratis untuk Semua Peneliti</span>
         </div>
         <h1 class="hero-title">
-          Perbanyak <span class="gradient-text">Dataset Riset</span> Kesehatan Anda dengan AI
+          <span data-i18n="hero_title_1">Perbanyak</span> <span class="gradient-text" data-i18n="hero_title_2">Dataset Riset</span> <span data-i18n="hero_title_3">Kesehatan dengan AI</span>
         </h1>
-        <p class="hero-desc">
+        <p class="hero-desc" data-i18n="hero_desc">
           Platform terbuka dan gratis bagi seluruh peneliti untuk mengaugmentasi dan mensintesiskan dataset kesehatan.
           Ubah ratusan data menjadi ribuan — tanpa mengorbankan kualitas dan distribusi statistik.
         </p>
         <div class="hero-actions">
           <a href="synthesize.html" class="btn-primary" id="btnStartFree">
-            <span>🔬</span> Mulai Sintesis Data
+            <span>🔬</span> <span data-i18n="hero_cta_primary">Mulai Sintesis Data</span>
           </a>
-          <a href="docs.html" class="btn-secondary" id="btnLearnMore">
-            <span>📖</span> Baca Dokumentasi
+          <a href="#live-demo" class="btn-secondary" id="btnLearnMore">
+            <span>⚡</span> <span data-i18n="hero_cta_secondary">Coba Live Demo</span>
           </a>
         </div>
         <div class="hero-stats">
           <div class="hero-stat">
             <div class="hero-stat-value" data-count="2500000" data-suffix="+">0</div>
-            <div class="hero-stat-label">Record Disintesis</div>
+            <div class="hero-stat-label" data-i18n="stat_records">Record Disintesis</div>
           </div>
           <div class="hero-stat">
             <div class="hero-stat-value" data-count="850" data-suffix="+">0</div>
-            <div class="hero-stat-label">Peneliti Terdaftar</div>
+            <div class="hero-stat-label" data-i18n="stat_researchers">Peneliti Terdaftar</div>
           </div>
           <div class="hero-stat">
             <div class="hero-stat-value" data-count="100" data-suffix="%">0</div>
-            <div class="hero-stat-label">Gratis & Terbuka</div>
+            <div class="hero-stat-label" data-i18n="stat_free">Gratis & Terbuka</div>
           </div>
         </div>
       </div>
       <div class="hero-visual">
-        <div class="hero-visual-card">
+        <div class="hero-visual-card data-viz-card">
           <div class="visual-header">
             <div class="visual-dots">
               <span></span><span></span><span></span>
             </div>
-            <div class="visual-title-bar"></div>
+            <div class="viz-title-text" data-i18n="viz_title">Distribusi Data Sintetis vs Asli</div>
           </div>
-          <div class="visual-code">
-            <div class="line">
-              <span class="code-comment">// Generate synthetic patient data</span>
+          <!-- Chart Visualization -->
+          <div class="data-chart" id="heroChart">
+            <div class="chart-labels">
+              <span data-i18n="chart_label">Distribusi Variabel</span>
+              <span class="chart-legend">
+                <span class="legend-dot original"></span><span data-i18n="chart_original">Asli</span>
+                <span class="legend-dot synthetic"></span><span data-i18n="chart_synthetic">Sintetis</span>
+              </span>
             </div>
-            <div class="line">
-              <span class="code-keyword">import</span> <span class="code-bracket">{</span> <span
-                class="code-function">SynthMed</span> <span class="code-bracket">}</span> <span
-                class="code-keyword">from</span> <span class="code-string">'@synthmed/core'</span>
-            </div>
-            <div class="line">&nbsp;</div>
-            <div class="line">
-              <span class="code-keyword">const</span> generator = <span class="code-keyword">new</span> <span
-                class="code-function">SynthMed</span><span class="code-bracket">()</span>
-            </div>
-            <div class="line">
-              <span class="code-keyword">const</span> dataset = <span class="code-keyword">await</span> generator.<span
-                class="code-function">create</span><span class="code-bracket">({</span>
-            </div>
-            <div class="line">
-              &nbsp;&nbsp;<span class="code-string">type</span>: <span class="code-string">'rekam_medis'</span>,
-            </div>
-            <div class="line">
-              &nbsp;&nbsp;<span class="code-string">count</span>: <span class="code-number">10000</span>,
-            </div>
-            <div class="line">
-              &nbsp;&nbsp;<span class="code-string">privacy</span>: <span class="code-string">'differential'</span>
+            <div class="chart-bars" id="chartBars"></div>
+            <div class="chart-axis">
+              <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
             </div>
           </div>
-          <div class="visual-progress">
-            <div class="progress-label">
-              <span>⚡ Generating dataset...</span>
-              <span>87%</span>
+          <div class="viz-metrics">
+            <div class="viz-metric">
+              <div class="viz-metric-val" id="inputCount">100</div>
+              <div class="viz-metric-label" data-i18n="viz_input">Data Asli</div>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill"></div>
+            <div class="viz-arrow">→</div>
+            <div class="viz-metric highlight">
+              <div class="viz-metric-val" id="outputCount">10,000</div>
+              <div class="viz-metric-label" data-i18n="viz_output">Data Sintetis</div>
+            </div>
+            <div class="viz-badge-small">
+              <span>✓</span> <span data-i18n="viz_quality">Kualitas Terjaga</span>
             </div>
           </div>
         </div>
         <div class="floating-badge">
           <div class="floating-icon green">✓</div>
           <div>
-            <div style="font-weight:600; font-size:0.82rem;">100% Gratis</div>
-            <div style="font-size:0.72rem; color:var(--text-muted);">Open Access</div>
+            <div style="font-weight:600; font-size:0.82rem;" data-i18n="badge_free">100% Gratis</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);" data-i18n="badge_open">Open Access</div>
           </div>
         </div>
         <div class="floating-badge">
           <div class="floating-icon blue">🔬</div>
           <div>
-            <div style="font-weight:600; font-size:0.82rem;">850+ Peneliti</div>
-            <div style="font-size:0.72rem; color:var(--text-muted);">Dari 45 universitas</div>
+            <div style="font-weight:600; font-size:0.82rem;" data-i18n="badge_researchers">850+ Peneliti</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);" data-i18n="badge_universities">Dari 45 universitas</div>
           </div>
         </div>
       </div>
@@ -157,10 +153,9 @@
   <section class="features" id="features">
     <div class="container">
       <div class="features-header reveal">
-        <span class="section-label"><span class="dot"></span> Fitur Platform</span>
-        <h2 class="section-title">Alat Riset yang <span class="highlight">Powerful</span> & Gratis</h2>
-        <p class="section-subtitle">Dirancang khusus untuk membantu peneliti mengaugmentasi dataset kesehatan mereka.
-          Semua fitur tersedia tanpa biaya.</p>
+        <span class="section-label"><span class="dot"></span> <span data-i18n="features_label">Fitur Platform</span></span>
+        <h2 class="section-title"><span data-i18n="features_title_1">Alat Riset yang</span> <span class="highlight" data-i18n="features_title_2">Powerful</span> <span data-i18n="features_title_3">& Gratis</span></h2>
+        <p class="section-subtitle" data-i18n="features_subtitle">Dirancang khusus untuk membantu peneliti mengaugmentasi dataset kesehatan mereka. Semua fitur tersedia tanpa biaya.</p>
       </div>
       <div class="features-grid">
         <div class="feature-card reveal">
@@ -198,6 +193,93 @@
           <h3 class="feature-title">Standar HL7 & FHIR</h3>
           <p class="feature-desc">Dataset dihasilkan sesuai standar interoperabilitas kesehatan HL7 FHIR, siap digunakan
             untuk sistem EHR.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LIVE INTERACTIVE DEMO ===== -->
+  <section class="live-demo" id="live-demo">
+    <div class="container">
+      <div class="demo-header reveal">
+        <span class="section-label"><span class="dot"></span> <span data-i18n="demo_label">Demo Interaktif</span></span>
+        <h2 class="section-title"><span data-i18n="demo_title_1">Lihat</span> <span class="highlight" data-i18n="demo_title_2">Augmentasi Data</span> <span data-i18n="demo_title_3">Secara Langsung</span></h2>
+        <p class="section-subtitle" data-i18n="demo_subtitle">Geser slider untuk melihat bagaimana SynthMed mengubah data kecil menjadi dataset besar — dengan distribusi statistik yang terjaga.</p>
+      </div>
+      <div class="demo-card reveal">
+        <div class="demo-left">
+          <div class="demo-slider-section">
+            <div class="demo-slider-label">
+              <span>📁 <span data-i18n="demo_input_label">Data Asli Anda</span></span>
+              <span class="demo-value-display"><span id="sliderVal">50</span> <span data-i18n="demo_records">record</span></span>
+            </div>
+            <input type="range" id="demoSlider" min="10" max="500" value="50" class="demo-slider">
+            <div class="demo-slider-range">
+              <span>10</span>
+              <span>500</span>
+            </div>
+          </div>
+          <div class="demo-multiplier-section">
+            <p class="demo-multiplier-label" data-i18n="demo_multiplier">Pilih Pengali Augmentasi:</p>
+            <div class="demo-multipliers">
+              <button class="mult-btn active" data-mult="10" id="mult10">10×</button>
+              <button class="mult-btn" data-mult="50" id="mult50">50×</button>
+              <button class="mult-btn" data-mult="100" id="mult100">100×</button>
+            </div>
+          </div>
+          <div class="demo-quality-row">
+            <div class="demo-quality-item">
+              <div class="demo-quality-bar">
+                <div class="demo-quality-fill" id="qualityDist" style="width:96%"></div>
+              </div>
+              <div class="demo-quality-text">
+                <span data-i18n="demo_q_dist">Distribusi</span>
+                <span class="demo-quality-pct" id="qualityDistPct">96%</span>
+              </div>
+            </div>
+            <div class="demo-quality-item">
+              <div class="demo-quality-bar">
+                <div class="demo-quality-fill corr" id="qualityCorr" style="width:94%"></div>
+              </div>
+              <div class="demo-quality-text">
+                <span data-i18n="demo_q_corr">Korelasi</span>
+                <span class="demo-quality-pct" id="qualityCorrPct">94%</span>
+              </div>
+            </div>
+            <div class="demo-quality-item">
+              <div class="demo-quality-bar">
+                <div class="demo-quality-fill priv" id="qualityPriv" style="width:100%"></div>
+              </div>
+              <div class="demo-quality-text">
+                <span data-i18n="demo_q_priv">Privasi</span>
+                <span class="demo-quality-pct" id="qualityPrivPct">100%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-arrow-col">
+          <div class="demo-arrow-wrap">
+            <div class="demo-arrow-icon">⚡</div>
+            <div class="demo-arrow-line"></div>
+            <div class="demo-arrow-text">AI Synthesis</div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="demo-output-header">
+            <span>📊 <span data-i18n="demo_output_label">Data Sintetis Dihasilkan</span></span>
+            <span class="demo-output-badge">✓ <span data-i18n="demo_validated">Tervalidasi</span></span>
+          </div>
+          <div class="demo-output-number" id="demoOutput">500</div>
+          <div class="demo-output-unit" data-i18n="demo_records_generated">record sintetis</div>
+          <div class="demo-ratio">
+            <span data-i18n="demo_ratio_label">Rasio augmentasi:</span>
+            <strong id="demoRatio">10×</strong>
+          </div>
+          <div class="demo-chart-mini" id="demoMiniChart"></div>
+          <a href="synthesize.html" class="demo-cta-btn">
+            <span>🔬</span>
+            <span data-i18n="demo_try_full">Coba dengan Data Anda Sendiri</span>
+          </a>
         </div>
       </div>
     </div>
@@ -388,66 +470,94 @@
     </div>
   </section>
 
-  <!-- ===== KEUNGGULAN PENELITI ===== -->
-  <section class="pricing" id="researchers">
+  <!-- ===== VALUE PROPOSITION ===== -->
+  <section class="value-prop" id="researchers">
     <div class="container">
-      <div class="pricing-header reveal">
-        <span class="section-label"><span class="dot"></span> Untuk Peneliti</span>
-        <h2 class="section-title">Kenapa Peneliti <span class="highlight">Memilih</span> SynthMed?</h2>
-        <p class="section-subtitle">Akses penuh ke semua fitur — tanpa biaya, tanpa batasan, tanpa syarat komersial.</p>
+      <div class="value-header reveal">
+        <span class="section-label"><span class="dot"></span> <span data-i18n="value_label">Untuk Peneliti</span></span>
+        <h2 class="section-title"><span data-i18n="value_title_1">Kenapa Peneliti</span> <span class="highlight" data-i18n="value_title_2">Memilih</span> <span data-i18n="value_title_3">SynthMed?</span></h2>
+        <p class="section-subtitle" data-i18n="value_subtitle">Akses penuh ke semua fitur — tanpa biaya, tanpa batasan, tanpa syarat komersial.</p>
       </div>
-      <div class="pricing-grid">
-        <!-- Keunggulan 1 -->
-        <div class="pricing-card reveal">
-          <div class="pricing-name">🆓 Sepenuhnya Gratis</div>
-          <div class="pricing-desc">Tidak ada biaya tersembunyi</div>
-          <div class="pricing-price">
-            100% Free
+
+      <!-- Value Pillars Horizontal -->
+      <div class="value-pillars reveal">
+        <div class="value-pillar">
+          <div class="value-pillar-icon-wrap">
+            <div class="value-pillar-icon">🆓</div>
+            <div class="value-pillar-glow"></div>
           </div>
-          <ul class="pricing-features">
-            <li><span class="check">✓</span> Unlimited augmentasi data</li>
-            <li><span class="check">✓</span> Semua tipe dataset kesehatan</li>
-            <li><span class="check">✓</span> Ekspor CSV, JSON, Excel</li>
-            <li><span class="check">✓</span> Tidak perlu kartu kredit</li>
-            <li><span class="check">✓</span> Akses selamanya</li>
-          </ul>
-          <a href="register.html" class="pricing-btn outline" id="btnFree">Daftar Sekarang</a>
-        </div>
-        <!-- Keunggulan 2 -->
-        <div class="pricing-card featured reveal">
-          <div class="pricing-popular">Open Access</div>
-          <div class="pricing-name">🔬 Rigor Ilmiah</div>
-          <div class="pricing-desc">Kualitas data terjamin untuk publikasi</div>
-          <div class="pricing-price">
-            Peer-Reviewed
+          <div class="value-pillar-content">
+            <h3 data-i18n="vp1_title">Sepenuhnya Gratis</h3>
+            <p data-i18n="vp1_desc">Tidak ada biaya tersembunyi. Tidak perlu kartu kredit. Akses penuh selamanya untuk semua peneliti.</p>
           </div>
-          <ul class="pricing-features">
-            <li><span class="check">✓</span> Distribusi statistik tervalidasi</li>
-            <li><span class="check">✓</span> Laporan kualitas otomatis</li>
-            <li><span class="check">✓</span> Uji KS-test & Chi-square</li>
-            <li><span class="check">✓</span> Preservasi korelasi antar variabel</li>
-            <li><span class="check">✓</span> Metodologi yang dapat disitasi</li>
-            <li><span class="check">✓</span> Audit trail lengkap</li>
-          </ul>
-          <a href="synthesize.html" class="pricing-btn primary" id="btnRigor">Mulai Riset</a>
         </div>
-        <!-- Keunggulan 3 -->
-        <div class="pricing-card reveal">
-          <div class="pricing-name">🤝 Komunitas Riset</div>
-          <div class="pricing-desc">Kolaborasi dengan sesama peneliti</div>
-          <div class="pricing-price">
-            Kolaboratif
+        <div class="value-pillar-divider"></div>
+        <div class="value-pillar">
+          <div class="value-pillar-icon-wrap">
+            <div class="value-pillar-icon">🔬</div>
+            <div class="value-pillar-glow cyan"></div>
           </div>
-          <ul class="pricing-features">
-            <li><span class="check">✓</span> Forum diskusi peneliti</li>
-            <li><span class="check">✓</span> Webinar & workshop bulanan</li>
-            <li><span class="check">✓</span> Template dataset populer</li>
-            <li><span class="check">✓</span> Panduan sitasi untuk paper</li>
-            <li><span class="check">✓</span> Bantuan teknis komunitas</li>
-            <li><span class="check">✓</span> Newsletter riset terbaru</li>
-          </ul>
-          <a href="docs.html" class="pricing-btn outline" id="btnCommunity">Lihat Dokumentasi</a>
+          <div class="value-pillar-content">
+            <h3 data-i18n="vp2_title">Rigor Ilmiah</h3>
+            <p data-i18n="vp2_desc">Metodologi tervalidasi secara akademik. Data sintetis dapat disitasi dalam publikasi ilmiah internasional.</p>
+          </div>
         </div>
+        <div class="value-pillar-divider"></div>
+        <div class="value-pillar">
+          <div class="value-pillar-icon-wrap">
+            <div class="value-pillar-icon">🤝</div>
+            <div class="value-pillar-glow emerald"></div>
+          </div>
+          <div class="value-pillar-content">
+            <h3 data-i18n="vp3_title">Komunitas Kolaboratif</h3>
+            <p data-i18n="vp3_desc">Bergabung dengan 850+ peneliti. Forum diskusi, webinar bulanan, dan template dataset siap pakai.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Pills Grid -->
+      <div class="value-features-grid reveal">
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_1">Unlimited augmentasi data</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_2">Distribusi statistik tervalidasi</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_3">Ekspor CSV, JSON, Excel, FHIR</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_4">Uji KS-test & Chi-square</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_5">Metodologi dapat disitasi</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_6">Forum & diskusi peneliti</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_7">Webinar & workshop bulanan</span>
+        </div>
+        <div class="value-feat-pill">
+          <span class="vfp-icon">✓</span>
+          <span data-i18n="vfeat_8">Differential privacy terjamin</span>
+        </div>
+      </div>
+
+      <div class="value-cta-row reveal">
+        <a href="register.html" class="btn-primary" id="btnFree">
+          🚀 <span data-i18n="value_cta_1">Daftar Gratis Sekarang</span>
+        </a>
+        <a href="synthesize.html" class="btn-secondary" id="btnRigor">
+          🔬 <span data-i18n="value_cta_2">Mulai Riset</span>
+        </a>
       </div>
     </div>
   </section>
@@ -526,6 +636,7 @@
 
   <!-- ===== JAVASCRIPT ===== -->
   <script src="app.js"></script>
+  <script src="i18n.js"></script>
 </body>
 
 </html>
