@@ -74,8 +74,8 @@ const translations = {
     vfeat_6: 'Forum & diskusi peneliti',
     vfeat_7: 'Webinar & workshop bulanan',
     vfeat_8: 'Differential privacy terjamin',
-    value_cta_1: 'Daftar Gratis Sekarang',
-    value_cta_2: 'Mulai Riset',
+    value_cta_2: 'Mulai Riset Sekarang',
+    value_cta_demo: 'Coba Live Demo',
     // Activity Dashboard
     activity_live: 'LIVE',
     activity_title_1: 'Platform',
@@ -165,8 +165,8 @@ const translations = {
     vfeat_6: 'Community forums & discussions',
     vfeat_7: 'Monthly webinars & workshops',
     vfeat_8: 'Differential privacy guaranteed',
-    value_cta_1: 'Register for Free',
-    value_cta_2: 'Start Research',
+    value_cta_2: 'Start Research Now',
+    value_cta_demo: 'Try Live Demo',
     // Activity Dashboard
     activity_live: 'LIVE',
     activity_title_1: 'Platform',
