@@ -76,6 +76,20 @@ const translations = {
     vfeat_8: 'Differential privacy terjamin',
     value_cta_1: 'Daftar Gratis Sekarang',
     value_cta_2: 'Mulai Riset',
+    // Activity Dashboard
+    activity_live: 'LIVE',
+    activity_title_1: 'Platform',
+    activity_title_2: ' Sedang Aktif',
+    activity_title_3: ' Sekarang',
+    activity_subtitle: 'Bergabung dengan ribuan peneliti yang sedang menjalankan sintesis data saat ini.',
+    act_running: 'Sintesis Berjalan',
+    act_online: 'Peneliti Online',
+    act_generated: 'Record Dibuat Hari Ini',
+    act_universities: 'Universitas',
+    viz_wave_label: 'Real-time Synthesis Stream',
+    feed_just_now: 'Baru saja',
+    activity_cta: 'Mulai Sintesis Sekarang — Gratis',
+    act_no_register: 'Tidak perlu mendaftar. Langsung gunakan.',
   },
   en: {
     // Navbar
@@ -153,6 +167,20 @@ const translations = {
     vfeat_8: 'Differential privacy guaranteed',
     value_cta_1: 'Register for Free',
     value_cta_2: 'Start Research',
+    // Activity Dashboard
+    activity_live: 'LIVE',
+    activity_title_1: 'Platform',
+    activity_title_2: ' Currently Active',
+    activity_title_3: ' Right Now',
+    activity_subtitle: 'Join thousands of researchers currently running data synthesis.',
+    act_running: 'Active Synthesis',
+    act_online: 'Researchers Online',
+    act_generated: 'Records Generated Today',
+    act_universities: 'Universities',
+    viz_wave_label: 'Real-time Synthesis Stream',
+    feed_just_now: 'Just now',
+    activity_cta: 'Start Synthesis Now — Free',
+    act_no_register: 'No registration required. Use it directly.',
   }
 };
 

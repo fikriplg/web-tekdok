@@ -562,17 +562,86 @@
     </div>
   </section>
 
-  <!-- ===== CTA SECTION ===== -->
-  <section class="cta-section" id="contact">
+  <!-- ===== PLATFORM ACTIVITY DASHBOARD (pengganti CTA) ===== -->
+  <section class="activity-section" id="contact">
     <div class="container">
-      <div class="cta-card reveal">
-        <h2 class="cta-title">Siap Memperbanyak <span class="gradient-text">Dataset Riset</span> Anda?</h2>
-        <p class="cta-desc">Bergabung dengan 850+ peneliti yang sudah menggunakan SynthMed untuk augmentasi data. Daftar
-          gratis, langsung gunakan.</p>
-        <div class="cta-input-group">
-          <a href="register.html" class="btn-primary" id="btnCta">🔬 Daftar sebagai Peneliti</a>
-          <a href="synthesize.html" class="btn-secondary" style="border-color:rgba(255,255,255,.2)">⚡ Langsung Coba</a>
+      <div class="activity-card reveal">
+
+        <!-- Header -->
+        <div class="activity-header">
+          <div class="activity-status-pill">
+            <span class="activity-pulse"></span>
+            <span data-i18n="activity_live">LIVE</span>
+          </div>
+          <h2 class="activity-title">
+            <span data-i18n="activity_title_1">Platform</span>
+            <span class="gradient-text" data-i18n="activity_title_2"> Sedang Aktif</span>
+            <span data-i18n="activity_title_3"> Sekarang</span>
+          </h2>
+          <p class="activity-subtitle" data-i18n="activity_subtitle">Bergabung dengan ribuan peneliti yang sedang menjalankan sintesis data saat ini.</p>
         </div>
+
+        <!-- Live Metrics Row -->
+        <div class="activity-metrics">
+          <div class="act-metric">
+            <div class="act-metric-icon">⚡</div>
+            <div class="act-metric-val" id="activeSynthVal">127</div>
+            <div class="act-metric-label" data-i18n="act_running">Sintesis Berjalan</div>
+          </div>
+          <div class="act-metric-divider"></div>
+          <div class="act-metric">
+            <div class="act-metric-icon">👩‍🔬</div>
+            <div class="act-metric-val" id="onlineResVal">43</div>
+            <div class="act-metric-label" data-i18n="act_online">Peneliti Online</div>
+          </div>
+          <div class="act-metric-divider"></div>
+          <div class="act-metric">
+            <div class="act-metric-icon">📊</div>
+            <div class="act-metric-val" id="recordsGenVal">2.5M+</div>
+            <div class="act-metric-label" data-i18n="act_generated">Record Dibuat Hari Ini</div>
+          </div>
+          <div class="act-metric-divider"></div>
+          <div class="act-metric">
+            <div class="act-metric-icon">🌏</div>
+            <div class="act-metric-val">45</div>
+            <div class="act-metric-label" data-i18n="act_universities">Universitas</div>
+          </div>
+        </div>
+
+        <!-- Mini EEG / Waveform Visualization -->
+        <div class="activity-viz">
+          <div class="viz-label">
+            <span class="viz-dot"></span>
+            <span data-i18n="viz_wave_label">Real-time Synthesis Stream</span>
+          </div>
+          <canvas id="waveCanvas" class="wave-canvas" width="800" height="60"></canvas>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="activity-feed" id="activityFeed">
+          <div class="feed-item">
+            <span class="feed-dot teal"></span>
+            <span class="feed-text"><strong>Dr. R. Prasetyo</strong> — UI · <span data-i18n="feed_just_now">Baru saja</span> menghasilkan <strong>5.000</strong> data EHR sintetis</span>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot cyan"></span>
+            <span class="feed-text"><strong>Nadia S, S.Ked</strong> — UNAIR · 2m lalu mengaugmentasi dataset kardiovaskular</span>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot emerald"></span>
+            <span class="feed-text"><strong>Prof. Ahmad F</strong> — FKM UI · 5m lalu selesai validasi 10.000 record</span>
+          </div>
+        </div>
+
+        <!-- CTA Button -->
+        <div class="activity-cta">
+          <a href="synthesize.html" class="btn-primary act-btn" id="btnCta">
+            <span>⚡</span>
+            <span data-i18n="activity_cta">Mulai Sintesis Sekarang — Gratis</span>
+          </a>
+          <p class="act-no-register" data-i18n="act_no_register">Tidak perlu mendaftar. Langsung gunakan.</p>
+        </div>
+
       </div>
     </div>
   </section>
