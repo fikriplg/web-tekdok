@@ -399,25 +399,54 @@ async def train_gan(
     def run_training():
         try:
             # Step 1: Read & Preprocess CSV
-            msg_queue.put({"type": "status", "step": 1, "message": "Membaca file CSV...", "session_id": session_id})
+            msg_queue.put({
+                "type": "status",
+                "step": 1,
+                "code": "read_csv",
+                "message": "Membaca file CSV...",
+                "session_id": session_id,
+            })
             content = file.file.read()
             df = pd.read_csv(io.BytesIO(content))
             
-            msg_queue.put({"type": "status", "step": 1, "message": f"Data dimuat: {len(df)} baris, {len(df.columns)} kolom"})
+            msg_queue.put({
+                "type": "status",
+                "step": 1,
+                "code": "data_loaded",
+                "rows": len(df),
+                "cols": len(df.columns),
+                "message": f"Data dimuat: {len(df)} baris, {len(df.columns)} kolom",
+            })
             time.sleep(0.2)
             
             # Preprocess
-            msg_queue.put({"type": "status", "step": 1, "message": "Preprocessing data (cleaning, deduplicate)..."})
+            msg_queue.put({
+                "type": "status",
+                "step": 1,
+                "code": "preprocessing",
+                "message": "Preprocessing data (cleaning, deduplicate)...",
+            })
             df = preprocess_dataframe(df)
             
             n_rows, n_cols = len(df), len(df.columns)
             
             # Step 2: Metadata Detection
-            msg_queue.put({"type": "status", "step": 2, "message": "Menganalisis metadata & distribusi kolom..."})
+            msg_queue.put({
+                "type": "status",
+                "step": 2,
+                "code": "metadata_analyze",
+                "message": "Menganalisis metadata & distribusi kolom...",
+            })
             metadata = SingleTableMetadata()
             metadata.detect_from_dataframe(df)
             
-            msg_queue.put({"type": "status", "step": 2, "message": f"Metadata OK: {n_cols} kolom terdeteksi"})
+            msg_queue.put({
+                "type": "status",
+                "step": 2,
+                "code": "metadata_ok",
+                "cols": n_cols,
+                "message": f"Metadata OK: {n_cols} kolom terdeteksi",
+            })
             time.sleep(0.2)
             
             # Step 3: Get optimized parameters & Initialize
@@ -429,8 +458,12 @@ async def train_gan(
                 param_summary += f", lr={params.get('generator_lr', 2e-4)}"
             
             msg_queue.put({
-                "type": "status", "step": 3, 
-                "message": f"Inisialisasi {model_type.upper()} ({param_summary})..."
+                "type": "status",
+                "step": 3,
+                "code": "init_model",
+                "model": model_type.upper(),
+                "param_summary": param_summary,
+                "message": f"Inisialisasi {model_type.upper()} ({param_summary})...",
             })
             
             if model_type.lower() == "tvae":
@@ -441,9 +474,11 @@ async def train_gan(
             # Signal training start
             msg_queue.put({
                 "type": "training_start", 
+                "code": "training_start",
                 "message": f"Training {model_type.upper()} ({epochs} epochs, {n_rows} baris)...",
                 "epochs": epochs,
                 "model": model_type.upper(),
+                "rows": n_rows,
                 "params": {k: str(v) for k, v in params.items()}
             })
             
@@ -463,6 +498,7 @@ async def train_gan(
             
             msg_queue.put({
                 "type": "complete", 
+                "code": "training_complete",
                 "message": f"Training selesai dalam {elapsed} detik!",
                 "elapsed": elapsed,
                 "rows": n_rows,

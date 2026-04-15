@@ -14,6 +14,144 @@ let colStats = [];
 let sessionId = ""; // Track server session
 let processNoticeRetryFn = null;
 let lastRunSummary = null;
+let currentFileMeta = null;
+let lastGenStepLabels = {}; // stepNum -> { percent, spec }
+
+function getI18n() {
+  const api = window.SynthMedI18n;
+  if (api && typeof api.t === 'function') return api;
+  return {
+    t: (key, fallback) => (fallback !== undefined ? fallback : key),
+    getLocale: () => 'id-ID',
+    getLang: () => 'id'
+  };
+}
+
+function t(key, fallback) {
+  return getI18n().t(key, fallback);
+}
+
+function getLocale() {
+  return getI18n().getLocale ? getI18n().getLocale() : 'id-ID';
+}
+
+function formatNumber(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return String(value);
+  try {
+    return n.toLocaleString(getLocale());
+  } catch {
+    return String(value);
+  }
+}
+
+function formatFixed(value, digits) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return String(value);
+  try {
+    return n.toLocaleString(getLocale(), {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
+  } catch {
+    return n.toFixed(digits);
+  }
+}
+
+function formatTemplate(key, params, fallback) {
+  const template = String(t(key, fallback));
+  return template.replace(/\{(\w+)\}/g, (m, p) => {
+    if (!params || params[p] === undefined || params[p] === null) return m;
+    return String(params[p]);
+  });
+}
+
+function renderLabelSpec(spec) {
+  if (!spec) return null;
+  if (spec.kind === 'i18n') return t(spec.key, spec.fallback);
+  if (spec.kind === 'template') {
+    const formatted = {};
+    Object.entries(spec.params || {}).forEach(([k, v]) => {
+      formatted[k] = typeof v === 'number' ? formatNumber(v) : String(v);
+    });
+    return formatTemplate(spec.key, formatted, spec.fallback);
+  }
+  if (spec.kind === 'text') return String(spec.text || '');
+  return null;
+}
+
+function setGenStep(stepNum, percent, spec) {
+  updateStepUI(stepNum, percent, renderLabelSpec(spec));
+  lastGenStepLabels[String(stepNum)] = { percent, spec };
+}
+
+function refreshGenStepLabels() {
+  Object.entries(lastGenStepLabels).forEach(([stepStr, entry]) => {
+    const stepNum = Number(stepStr);
+    if (!Number.isFinite(stepNum) || !entry) return;
+    updateStepUI(stepNum, entry.percent, renderLabelSpec(entry.spec));
+  });
+}
+
+function getFriendlyErrorMessage(err) {
+  if (!err) return '';
+  if (err.code === 'TRAINING_TIMEOUT') return t('synth_err_training_timeout', err.message || '');
+  if (err.code === 'SESSION_MISSING') return t('synth_err_session_missing', err.message || '');
+  return err.message || String(err);
+}
+
+function formatRowsCols(rows, cols) {
+  return `${formatNumber(rows)} ${t('unit_rows')} × ${formatNumber(cols)} ${t('unit_columns')}`;
+}
+
+function renderPreviewSummary() {
+  const summary = document.getElementById('dataSummary');
+  if (!summary) return;
+
+  const numericCount = originalHeaders.filter((_, i) => isNumericColumn(i)).length;
+
+  summary.innerHTML = `
+    <span>📋 <strong>${formatNumber(originalHeaders.length)}</strong> ${t('unit_columns')}</span>
+    <span>📊 <strong>${formatNumber(originalData.length)}</strong> ${t('unit_rows')}</span>
+    <span>🔢 <strong>${formatNumber(numericCount)}</strong> ${t('synth_summary_numeric_suffix')}</span>
+    <span>📝 <strong>${formatNumber(originalHeaders.length - numericCount)}</strong> ${t('synth_summary_categorical_suffix')}</span>
+  `;
+}
+
+function refreshDynamicI18nUI() {
+  // Sample file meta (uses units)
+  const fileSizeEl = document.getElementById('fileSize');
+  if (fileSizeEl && currentFileMeta?.type === 'sample') {
+    fileSizeEl.textContent = formatRowsCols(currentFileMeta.rows, currentFileMeta.cols);
+  }
+
+  if (originalData.length > 0) {
+    updateMultiplier();
+    renderPreviewSummary();
+  }
+
+  if (lastRunSummary) {
+    updateRunSummaryUI();
+  }
+
+  refreshGenStepLabels();
+
+  // Results (dynamic blocks built via JS)
+  if (syntheticData.length > 0) {
+    const usedMultiplier = lastRunSummary?.multiplier ?? multiplier;
+
+    const totalRowsEl = document.getElementById('totalRows');
+    if (totalRowsEl) totalRowsEl.textContent = formatNumber(syntheticData.length);
+
+    const qualityTotalValue = document.getElementById('qualityTotalRowsValue');
+    if (qualityTotalValue) qualityTotalValue.textContent = formatNumber(syntheticData.length);
+
+    const qualityTotalLabel = document.getElementById('qualityTotalRowsLabel');
+    if (qualityTotalLabel) {
+      qualityTotalLabel.textContent = formatTemplate('synth_quality_total_rows_label_tpl', { m: usedMultiplier });
+    }
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   initUpload();
@@ -21,6 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initProcessNotice();
   initNavToggle();
   initTabs();
+
+  window.addEventListener('synthmed:langchange', () => {
+    refreshDynamicI18nUI();
+  });
   
   // Single listener for download to avoid duplicates
   const downloadBtn = document.getElementById('btnDownload');
@@ -29,6 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
       downloadCSV();
     });
   }
+
+  refreshDynamicI18nUI();
 });
 
 function initProcessNotice() {
@@ -62,7 +206,7 @@ function showProcessNotice(title, message, retryFn) {
   const titleEl = document.getElementById('processNoticeTitle');
   const textEl = document.getElementById('processNoticeText');
 
-  if (titleEl) titleEl.textContent = title || 'Terjadi kendala';
+  if (titleEl) titleEl.textContent = title || t('synth_notice_title');
   if (textEl) textEl.textContent = message || '';
 
   processNoticeRetryFn = typeof retryFn === 'function' ? retryFn : null;
@@ -96,7 +240,7 @@ function setRunningMode(isRunning) {
 function formatColumnsSummary(cols) {
   if (!Array.isArray(cols) || cols.length === 0) return '-';
   if (cols.length <= 4) return cols.join(', ');
-  return `${cols.length} kolom · ${cols.slice(0, 3).join(', ')} …`;
+  return `${formatNumber(cols.length)} ${t('unit_columns')} · ${cols.slice(0, 3).join(', ')} …`;
 }
 
 function updateRunSummaryUI(partial) {
@@ -121,7 +265,7 @@ function updateRunSummaryUI(partial) {
   if (epochsEl) epochsEl.textContent = String(epochs);
   if (targetEl) {
     const n = Number(totalTarget);
-    targetEl.textContent = Number.isFinite(n) ? `${n.toLocaleString('id-ID')} baris` : '-';
+    targetEl.textContent = Number.isFinite(n) ? `${formatNumber(n)} ${t('unit_rows')}` : '-';
   }
   if (sessionEl) sessionEl.textContent = sessionId ? sessionId : '-';
 }
@@ -194,6 +338,7 @@ function initUpload() {
   const sampleBtn = document.getElementById('btnSample');
   if (sampleBtn) {
     sampleBtn.addEventListener('click', () => {
+      currentFileMeta = { type: 'sample', rows: 30, cols: 10 };
       const sampleCSV = `patient_id,age,gender,blood_pressure_systolic,blood_pressure_diastolic,heart_rate,cholesterol_total,blood_sugar,bmi,diagnosis
 P001,45,Laki-laki,130,85,78,210,105,27.3,Hipertensi
 P002,62,Perempuan,145,92,82,245,180,31.2,Diabetes Mellitus
@@ -227,7 +372,7 @@ P029,40,Laki-laki,124,79,73,192,94,24.5,Normal
 P030,58,Perempuan,141,90,80,238,150,28.1,Hipertensi`;
 
       document.getElementById('fileName').textContent = 'sample_dataset.csv';
-      document.getElementById('fileSize').textContent = '30 baris × 10 kolom';
+      document.getElementById('fileSize').textContent = formatRowsCols(30, 10);
       document.getElementById('fileInfo').classList.remove('hidden');
       document.getElementById('uploadZone').style.display = 'none';
       document.querySelector('.sample-divider').style.display = 'none';
@@ -239,9 +384,11 @@ P030,58,Perempuan,141,90,80,238,150,28.1,Hipertensi`;
 
 function handleFile(file) {
   if (file.size > 10 * 1024 * 1024) {
-    alert('File terlalu besar! Maksimal 10MB.');
+    alert(t('synth_file_too_large'));
     return;
   }
+
+  currentFileMeta = { type: 'upload', sizeBytes: file.size };
 
   document.getElementById('fileName').textContent = file.name;
   document.getElementById('fileSize').textContent = formatFileSize(file.size);
@@ -257,7 +404,10 @@ function handleFile(file) {
 
 function parseCSV(text) {
   const lines = text.trim().split('\n');
-  if (lines.length < 2) { alert('File CSV harus memiliki minimal 2 baris (header + data)'); return; }
+  if (lines.length < 2) {
+    alert(t('synth_csv_min_rows'));
+    return;
+  }
 
   originalHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
   originalData = [];
@@ -269,7 +419,10 @@ function parseCSV(text) {
     }
   }
 
-  if (originalData.length === 0) { alert('Tidak ada data valid yang ditemukan.'); return; }
+  if (originalData.length === 0) {
+    alert(t('synth_no_valid_data'));
+    return;
+  }
 
   showPreview();
   selectedColumns = [...originalHeaders];
@@ -281,6 +434,9 @@ function parseCSV(text) {
   
   document.getElementById('btnNext1').classList.remove('disabled');
   document.getElementById('btnNext1').disabled = false;
+
+  updateMultiplier();
+  refreshDynamicI18nUI();
 }
 
 function parseCSVLine(line) {
@@ -300,7 +456,6 @@ function parseCSVLine(line) {
 function showPreview() {
   const table = document.getElementById('previewTable');
   const preview = document.getElementById('dataPreview');
-  const summary = document.getElementById('dataSummary');
 
   let html = '<thead><tr>';
   originalHeaders.forEach(h => html += `<th>${escapeHtml(h)}</th>`);
@@ -315,19 +470,14 @@ function showPreview() {
   html += '</tbody>';
   table.innerHTML = html;
 
-  const numericCount = originalHeaders.filter((_, i) => isNumericColumn(i)).length;
-  summary.innerHTML = `
-    <span>📋 <strong>${originalHeaders.length}</strong> kolom</span>
-    <span>📊 <strong>${originalData.length}</strong> baris</span>
-    <span>🔢 <strong>${numericCount}</strong> kolom numerik</span>
-    <span>📝 <strong>${originalHeaders.length - numericCount}</strong> kolom kategorikal</span>
-  `;
+  renderPreviewSummary();
   preview.classList.remove('hidden');
 }
 
 function resetUpload() {
   originalData = [];
   originalHeaders = [];
+  currentFileMeta = null;
   document.getElementById('fileInput').value = '';
   document.getElementById('fileInfo').classList.add('hidden');
   document.getElementById('dataPreview').classList.add('hidden');
@@ -370,7 +520,10 @@ function updateMultiplier() {
   const multEl = document.getElementById('multValue');
   const estEl = document.getElementById('outputEstimate');
   if (multEl) multEl.textContent = multiplier;
-  if (estEl) estEl.textContent = `Estimasi: ${(originalData.length * multiplier).toLocaleString('id-ID')} baris output`;
+  if (estEl && originalData.length > 0) {
+    const n = originalData.length * multiplier;
+    estEl.textContent = formatTemplate('synth_output_estimate_tpl', { n: formatNumber(n) });
+  }
 }
 
 function buildColumnChips() {
@@ -410,15 +563,16 @@ async function startGeneration() {
 
   if (selectedColumns.length === 0) {
     showProcessNotice(
-      'Konfigurasi belum lengkap',
-      'Pilih minimal 1 kolom target untuk disintesis.',
+      t('synth_config_incomplete_title'),
+      t('synth_config_incomplete_msg'),
       () => startGeneration()
     );
     resetGenButton();
     return;
   }
   
-  const totalTarget = originalData.length * multiplier;
+  const runMultiplier = multiplier;
+  const totalTarget = originalData.length * runMultiplier;
 
   const epochs = document.getElementById('epochSlider').value;
   const modelType = document.querySelector('input[name="ganModel"]:checked').value;
@@ -429,7 +583,8 @@ async function startGeneration() {
     columns: [...selectedColumns],
     modelType,
     epochs,
-    totalTarget
+    totalTarget,
+    multiplier: runMultiplier
   });
 
   setRunningMode(true);
@@ -455,7 +610,12 @@ async function startGeneration() {
       body: formData
     });
 
-    if (!response.ok) throw new Error('Backend error: ' + response.status);
+    if (!response.ok) {
+      const err = new Error('Backend error: ' + response.status);
+      err.code = 'BACKEND_HTTP';
+      err.status = response.status;
+      throw err;
+    }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -467,7 +627,9 @@ async function startGeneration() {
     while (true) {
       // Check timeout
       if (Date.now() - lastMessageTime > TIMEOUT_MS) {
-        throw new Error('Training timeout - no update from server for 10 minutes');
+        const err = new Error('Training timeout');
+        err.code = 'TRAINING_TIMEOUT';
+        throw err;
       }
 
       const { value, done } = await reader.read();
@@ -502,7 +664,11 @@ async function startGeneration() {
               console.error('[ERROR] Backend error:', msg.message);
               restoreStep2ConfigView();
               goToStep(2);
-              showProcessNotice('Training gagal', msg.message || 'Terjadi error dari backend.', () => startGeneration());
+              showProcessNotice(
+                t('synth_training_failed_title'),
+                msg.message || t('synth_backend_error_generic'),
+                () => startGeneration()
+              );
               return;
             }
           } catch (e) {
@@ -543,7 +709,11 @@ async function startGeneration() {
             console.error('[ERROR] Backend error:', msg.message);
             restoreStep2ConfigView();
             goToStep(2);
-            showProcessNotice('Training gagal', msg.message || 'Terjadi error dari backend.', () => startGeneration());
+            showProcessNotice(
+              t('synth_training_failed_title'),
+              msg.message || t('synth_backend_error_generic'),
+              () => startGeneration()
+            );
             return;
           }
         } catch(e) { 
@@ -556,15 +726,15 @@ async function startGeneration() {
 
     if (trainingDone) {
       console.log('[SUCCESS] Training complete! Fetching synthetic data...');
-      updateStepUI(4, 50, 'Mengambil data sintetis dari model...');
+      updateStepUI(4, 50, t('synth_fetching_synthetic'));
       await fetchSynthesis(totalTarget);
     } else {
       console.error('[ERROR] Training selesai tapi trainingDone masih false');
       restoreStep2ConfigView();
       goToStep(2);
       showProcessNotice(
-        'Training tidak selesai',
-        'Training selesai tanpa konfirmasi dari server. Silakan coba lagi. (Detail: lihat Console/F12)',
+        t('synth_training_incomplete_title'),
+        t('synth_training_incomplete_msg'),
         () => startGeneration()
       );
     }
@@ -574,9 +744,12 @@ async function startGeneration() {
     console.error('[ERROR] Generation error:', e);
     restoreStep2ConfigView();
     goToStep(2);
+
+    const base = API_BASE || window.location.origin;
+    const friendly = getFriendlyErrorMessage(e);
     showProcessNotice(
-      'Gagal menghubungi backend',
-      `Error: ${e.message}. Pastikan server Python berjalan di ${API_BASE}.`,
+      t('synth_backend_unreachable_title'),
+      formatTemplate('synth_backend_unreachable_msg_tpl', { error: friendly, base }),
       () => startGeneration()
     );
   }
@@ -594,28 +767,49 @@ function handleStreamMessage(msg) {
   const overall = document.getElementById('genOverallFill');
   const overallText = document.getElementById('genOverallText');
 
+  const statusSpec = (m) => {
+    const code = String(m?.code || '');
+    if (code === 'read_csv') return { kind: 'i18n', key: 'synth_status_read_csv' };
+    if (code === 'data_loaded') return { kind: 'template', key: 'synth_status_data_loaded_tpl', params: { r: Number(m.rows), c: Number(m.cols) } };
+    if (code === 'preprocessing') return { kind: 'i18n', key: 'synth_status_preprocessing' };
+    if (code === 'metadata_analyze') return { kind: 'i18n', key: 'synth_status_metadata_analyze' };
+    if (code === 'metadata_ok') return { kind: 'template', key: 'synth_status_metadata_ok_tpl', params: { c: Number(m.cols) } };
+    if (code === 'init_model') {
+      const model = String(m.model || lastRunSummary?.modelType || '').toUpperCase();
+      const details = String(m.param_summary || m.paramSummary || '').trim();
+      if (details) return { kind: 'template', key: 'synth_status_init_model_tpl', params: { m: model, d: details } };
+      return { kind: 'template', key: 'synth_status_init_model_simple_tpl', params: { m: model } };
+    }
+
+    if (m.step === 1) return { kind: 'i18n', key: 'synth_gen_1' };
+    if (m.step === 2) return { kind: 'i18n', key: 'synth_gen_2' };
+    if (m.step === 3) return { kind: 'i18n', key: 'synth_gen_3' };
+    return null;
+  };
+
   if (msg.type === 'status') {
     const step = msg.step || 1;
+    const spec = statusSpec(msg);
     
     if (step === 1) {
-      updateStepUI(1, 100, msg.message);
+      setGenStep(1, 100, spec);
       overall.style.width = '15%';
-      overallText.textContent = '15% selesai';
+      overallText.textContent = formatTemplate('synth_percent_complete_tpl', { p: 15 });
     } else if (step === 2) {
       // Mark step 1 done, activate step 2
       document.getElementById('genStep1').classList.add('done');
       document.getElementById('genStatus1').textContent = '✅';
       document.getElementById('genStep2').classList.add('active');
-      updateStepUI(2, 100, msg.message);
+      setGenStep(2, 100, spec);
       overall.style.width = '30%';
-      overallText.textContent = '30% selesai';
+      overallText.textContent = formatTemplate('synth_percent_complete_tpl', { p: 30 });
     } else if (step === 3) {
       document.getElementById('genStep2').classList.add('done');
       document.getElementById('genStatus2').textContent = '✅';
       document.getElementById('genStep3').classList.add('active');
-      updateStepUI(3, 10, msg.message);
+      setGenStep(3, 10, spec);
       overall.style.width = '35%';
-      overallText.textContent = '35% selesai';
+      overallText.textContent = formatTemplate('synth_percent_complete_tpl', { p: 35 });
     }
     
   } else if (msg.type === 'training_start') {
@@ -626,25 +820,41 @@ function handleStreamMessage(msg) {
     document.getElementById('genStatus2').textContent = '✅';
     document.getElementById('genStep3').classList.add('active');
     
-    updateStepUI(3, 5, msg.message);
+    // Let the progress simulator own the label during training
+    delete lastGenStepLabels['3'];
+
+    updateStepUI(3, 5, renderLabelSpec({
+      kind: 'template',
+      key: 'synth_status_training_start_tpl',
+      params: {
+        m: String(msg.model || lastRunSummary?.modelType || '').toUpperCase(),
+        e: Number(msg.epochs) || 0,
+        r: Number(msg.rows) || originalData.length
+      }
+    }));
     
     // Start simulated progress animation
     startProgressSimulation(msg.epochs || 300);
     
   } else if (msg.type === 'complete') {
     stopProgressSimulation();
+
+    const elapsed = Number(msg.elapsed);
+    const completeSpec = Number.isFinite(elapsed)
+      ? { kind: 'template', key: 'synth_training_complete_tpl', params: { t: elapsed } }
+      : { kind: 'i18n', key: 'synth_complete_celebration' };
     
     // Mark step 3 as done
-    updateStepUI(3, 100, msg.message);
+    setGenStep(3, 100, completeSpec);
     document.getElementById('genStep3').classList.add('done');
     document.getElementById('genStatus3').textContent = '✅';
     
     // Activate step 4
     document.getElementById('genStep4').classList.add('active');
-    updateStepUI(4, 30, 'Model siap, mengambil data...');
+    setGenStep(4, 30, { kind: 'i18n', key: 'synth_model_ready_fetching' });
     
     overall.style.width = '85%';
-    overallText.textContent = '85% selesai';
+    overallText.textContent = formatTemplate('synth_percent_complete_tpl', { p: 85 });
     
   } else if (msg.type === 'error') {
     stopProgressSimulation();
@@ -673,16 +883,16 @@ function startProgressSimulation(epochs) {
 
     const elapsedText = trainingStartedAt ? formatDuration(Date.now() - trainingStartedAt) : '';
     const label = elapsedText
-      ? `Neural Training: ${Math.round(simProgress)}% · ${elapsedText}`
-      : `Neural Training: ${Math.round(simProgress)}%`;
+      ? formatTemplate('synth_training_progress_time_tpl', { p: Math.round(simProgress), t: elapsedText })
+      : formatTemplate('synth_training_progress_tpl', { p: Math.round(simProgress) });
 
     updateStepUI(3, simProgress, label);
 
     const overallVal = 35 + (simProgress * 0.5);
     document.getElementById('genOverallFill').style.width = overallVal + '%';
     document.getElementById('genOverallText').textContent = elapsedText
-      ? Math.round(overallVal) + '% selesai · ' + elapsedText
-      : Math.round(overallVal) + '% selesai';
+      ? formatTemplate('synth_percent_complete_time_tpl', { p: Math.round(overallVal), t: elapsedText })
+      : formatTemplate('synth_percent_complete_tpl', { p: Math.round(overallVal) });
   }, 500);
 }
 
@@ -697,7 +907,9 @@ function stopProgressSimulation() {
 async function fetchSynthesis(totalTarget) {
   try {
     if (!sessionId) {
-      throw new Error('Session belum terbentuk. Jalankan training ulang.');
+      const err = new Error('Session missing');
+      err.code = 'SESSION_MISSING';
+      throw err;
     }
 
     console.log('[FETCH] Requesting synthesis with sessionId:', sessionId);
@@ -721,11 +933,11 @@ async function fetchSynthesis(totalTarget) {
     
     console.log('[FETCH] Synthetic data prepared:', syntheticData.length, 'rows');
     
-    updateStepUI(4, 100, 'Data sintetis berhasil dihasilkan!');
+    updateStepUI(4, 100, t('synth_synthetic_generated'));
     document.getElementById('genStep4').classList.add('done');
     document.getElementById('genStatus4').textContent = '✅';
     document.getElementById('genOverallFill').style.width = '100%';
-    document.getElementById('genOverallText').textContent = '100% Selesai! 🎉';
+    document.getElementById('genOverallText').textContent = t('synth_complete_celebration');
     
     setTimeout(() => { 
       console.log('[FLOW] Moving to Step 3 and showing results');
@@ -739,9 +951,11 @@ async function fetchSynthesis(totalTarget) {
     console.error('[ERROR] Response:', e.response?.data);
     restoreStep2ConfigView();
     goToStep(2);
+
+    const detail = e.response?.data?.detail || getFriendlyErrorMessage(e);
     showProcessNotice(
-      'Sintesis gagal',
-      'Gagal men-generate data sintetis dari model. ' + (e.response?.data?.detail || e.message),
+      t('synth_synthesis_failed_title'),
+      `${t('synth_synthesis_failed_msg_prefix')} ${detail}`,
       () => startGeneration()
     );
   }
@@ -757,7 +971,7 @@ function updateStepUI(stepNum, percent, label) {
 
 // ===== STEP 3: RESULTS =====
 function showResults() {
-  document.getElementById('totalRows').textContent = syntheticData.length.toLocaleString('id-ID');
+  document.getElementById('totalRows').textContent = formatNumber(syntheticData.length);
 
   const table = document.getElementById('resultTable');
   let html = '<thead><tr>';
@@ -797,12 +1011,13 @@ function showResults() {
 
 async function buildQualityReport() {
   const grid = document.getElementById('qualityGrid');
+  const usedMultiplier = lastRunSummary?.multiplier ?? multiplier;
   
   // Show loading state
   grid.innerHTML = `
     <div class="quality-item" style="grid-column: 1/-1; padding: 32px;">
-      <div class="quality-score good" style="font-size: 1.2rem;">⏳ Mengevaluasi kualitas...</div>
-      <div class="quality-label">Menghitung KSComplement, TVComplement, CorrelationSimilarity via SDMetrics</div>
+      <div class="quality-score good" style="font-size: 1.2rem;" data-i18n="synth_quality_loading_title">${escapeHtml(t('synth_quality_loading_title'))}</div>
+      <div class="quality-label" data-i18n="synth_quality_loading_desc">${escapeHtml(t('synth_quality_loading_desc'))}</div>
     </div>
   `;
 
@@ -826,20 +1041,20 @@ async function buildQualityReport() {
     // Build quality grid with real SDMetrics scores
     let html = `
       <div class="quality-item">
-        <div class="quality-score ${scoreClass(overall)}">${overall.toFixed(1)}%</div>
-        <div class="quality-label">Skor Keseluruhan (SDMetrics)</div>
+        <div class="quality-score ${scoreClass(overall)}">${formatFixed(overall, 1)}%</div>
+        <div class="quality-label" data-i18n="synth_quality_overall_label">${escapeHtml(t('synth_quality_overall_label'))}</div>
       </div>
       <div class="quality-item">
-        <div class="quality-score ${scoreClass(shapesScore)}">${shapesScore.toFixed(1)}%</div>
-        <div class="quality-label">Column Shapes (KS + TV)</div>
+        <div class="quality-score ${scoreClass(shapesScore)}">${formatFixed(shapesScore, 1)}%</div>
+        <div class="quality-label" data-i18n="synth_quality_shapes_label">${escapeHtml(t('synth_quality_shapes_label'))}</div>
       </div>
       <div class="quality-item">
-        <div class="quality-score ${scoreClass(pairsScore)}">${pairsScore.toFixed(1)}%</div>
-        <div class="quality-label">Pair Trends (Korelasi)</div>
+        <div class="quality-score ${scoreClass(pairsScore)}">${formatFixed(pairsScore, 1)}%</div>
+        <div class="quality-label" data-i18n="synth_quality_pairs_label">${escapeHtml(t('synth_quality_pairs_label'))}</div>
       </div>
       <div class="quality-item">
-        <div class="quality-score good">${syntheticData.length.toLocaleString('id-ID')}</div>
-        <div class="quality-label">Total Baris × ${multiplier}x</div>
+        <div class="quality-score good" id="qualityTotalRowsValue">${formatNumber(syntheticData.length)}</div>
+        <div class="quality-label" id="qualityTotalRowsLabel">${escapeHtml(formatTemplate('synth_quality_total_rows_label_tpl', { m: usedMultiplier }))}</div>
       </div>
     `;
     
@@ -847,7 +1062,7 @@ async function buildQualityReport() {
     if (data.column_details && data.column_details.length > 0) {
       html += `
         <div class="quality-item full-width">
-          <div style="font-weight:700; margin-bottom:12px; font-size:0.95rem;">📊 Skor Per Kolom</div>
+          <div style="font-weight:700; margin-bottom:12px; font-size:0.95rem;" data-i18n="synth_quality_per_column_title">${escapeHtml(t('synth_quality_per_column_title'))}</div>
           <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:8px;">
       `;
       data.column_details.forEach(col => {
@@ -856,7 +1071,7 @@ async function buildQualityReport() {
           <div style="padding:8px 12px; background:rgba(13,148,136,0.04); border-radius:8px; border:1px solid rgba(13,148,136,0.08);">
             <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:4px;">
               <span style="color:var(--text-secondary);">${escapeHtml(col.column)}</span>
-              <span style="font-weight:700; color:${barColor};">${col.score.toFixed(1)}%</span>
+              <span style="font-weight:700; color:${barColor};">${formatFixed(col.score, 1)}%</span>
             </div>
             <div style="height:4px; background:rgba(148,163,184,0.1); border-radius:2px; overflow:hidden;">
               <div style="height:100%; width:${col.score}%; background:${barColor}; border-radius:2px;"></div>
@@ -876,7 +1091,7 @@ async function buildQualityReport() {
     grid.innerHTML = `
       <div class="quality-item" style="grid-column: 1/-1;">
         <div class="quality-score ok">⚠️</div>
-        <div class="quality-label">Gagal menghubungi evaluasi SDMetrics. Menggunakan estimasi lokal.</div>
+        <div class="quality-label" data-i18n="synth_quality_backend_failed">${escapeHtml(t('synth_quality_backend_failed'))}</div>
       </div>
     `;
     buildQualityReportFallback();
@@ -886,6 +1101,7 @@ async function buildQualityReport() {
 function buildQualityReportFallback() {
   // Fallback: use local mean/std comparison if backend evaluation fails
   const grid = document.getElementById('qualityGrid');
+  const usedMultiplier = lastRunSummary?.multiplier ?? multiplier;
   colStats = analyzeColumns();
   const numericHeaders = originalHeaders.filter((_, i) => colStats[i].isNumeric);
   let totalSim = 0, count = 0;
@@ -903,12 +1119,12 @@ function buildQualityReportFallback() {
   const avg = count > 0 ? totalSim / count : 0;
   grid.innerHTML = `
     <div class="quality-item">
-      <div class="quality-score ${avg >= 80 ? 'good' : 'ok'}">${avg.toFixed(1)}%</div>
-      <div class="quality-label">Estimasi Lokal (Mean/Std)</div>
+      <div class="quality-score ${avg >= 80 ? 'good' : 'ok'}">${formatFixed(avg, 1)}%</div>
+      <div class="quality-label" data-i18n="synth_quality_local_estimate_label">${escapeHtml(t('synth_quality_local_estimate_label'))}</div>
     </div>
     <div class="quality-item">
-      <div class="quality-score good">${syntheticData.length.toLocaleString('id-ID')}</div>
-      <div class="quality-label">Total Baris × ${multiplier}x</div>
+      <div class="quality-score good" id="qualityTotalRowsValue">${formatNumber(syntheticData.length)}</div>
+      <div class="quality-label" id="qualityTotalRowsLabel">${escapeHtml(formatTemplate('synth_quality_total_rows_label_tpl', { m: usedMultiplier }))}</div>
     </div>
   `;
 }
@@ -932,10 +1148,10 @@ function buildComparison() {
       html += `
         <div class="comp-card">
           <div class="comp-col-name">📊 ${escapeHtml(header)}</div>
-          <div class="comp-row"><span>Mean (asli → AI)</span><span>${stats.mean.toFixed(2)} → ${synthMean}</span></div>
-          <div class="comp-row"><span>Std (asli → AI)</span><span>${stats.std.toFixed(2)} → ${synthStd}</span></div>
-          <div class="comp-row"><span>Min (asli → AI)</span><span>${stats.min.toFixed(2)} → ${synthMin}</span></div>
-          <div class="comp-row"><span>Max (asli → AI)</span><span>${stats.max.toFixed(2)} → ${synthMax}</span></div>
+          <div class="comp-row"><span data-i18n="synth_comparison_mean_label">${escapeHtml(t('synth_comparison_mean_label'))}</span><span>${stats.mean.toFixed(2)} → ${synthMean}</span></div>
+          <div class="comp-row"><span data-i18n="synth_comparison_std_label">${escapeHtml(t('synth_comparison_std_label'))}</span><span>${stats.std.toFixed(2)} → ${synthStd}</span></div>
+          <div class="comp-row"><span data-i18n="synth_comparison_min_label">${escapeHtml(t('synth_comparison_min_label'))}</span><span>${stats.min.toFixed(2)} → ${synthMin}</span></div>
+          <div class="comp-row"><span data-i18n="synth_comparison_max_label">${escapeHtml(t('synth_comparison_max_label'))}</span><span>${stats.max.toFixed(2)} → ${synthMax}</span></div>
         </div>
       `;
     }
@@ -995,7 +1211,8 @@ function resetGenerationUI() {
   document.querySelectorAll('.gen-fill').forEach(f => f.style.width = '0%');
   document.querySelectorAll('.gen-status').forEach(s => s.textContent = '⏳');
   document.getElementById('genOverallFill').style.width = '0%';
-  document.getElementById('genOverallText').textContent = '0% selesai';
+  document.getElementById('genOverallText').textContent = t('synth_overall_initial');
+  lastGenStepLabels = {};
 }
 
 function formatFileSize(bytes) {

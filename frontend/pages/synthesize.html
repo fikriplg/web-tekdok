@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SynthMed — Sintesis Dataset</title>
+  <title data-i18n="page_title_synth">SynthMed — Sintesis Dataset</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧬</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,12 +21,16 @@
         SynthMed
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="index.html">Beranda</a>
-        <a href="docs.html">Dokumentasi</a>
-        <a href="synthesize.html" class="active">Synthesizer</a>
-        <a href="index.html" class="nav-cta">Kembali</a>
+        <a href="index.html" data-i18n="nav_home">Beranda</a>
+        <a href="docs.html" data-i18n="nav_docs">Dokumentasi</a>
+        <a href="synthesize.html" class="active" data-i18n="nav_synth">Synthesizer</a>
+        <a href="index.html" class="nav-cta" data-i18n="nav_back">Kembali</a>
       </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <button class="lang-toggle" id="langToggle" data-i18n-aria-label="aria_toggle_language" aria-label="Ganti bahasa">
+        <span class="lang-flag">🇮🇩</span>
+        <span class="lang-text" id="langText">ID</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" data-i18n-aria-label="aria_toggle_menu" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -38,47 +42,47 @@
 
       <!-- Page Header -->
       <div class="tool-header">
-        <span class="section-label"><span class="dot"></span> Dataset Synthesizer</span>
-        <h1 class="tool-title">Sintesis <span class="gradient-text">Dataset</span> Anda</h1>
-        <p class="tool-subtitle">Upload dataset CSV Anda, atur parameter, dan generate data sintetis baru yang mempertahankan distribusi statistik asli.</p>
+        <span class="section-label"><span class="dot"></span> <span data-i18n="synth_label">Dataset Synthesizer</span></span>
+        <h1 class="tool-title"><span data-i18n="synth_title_1">Sintesis</span> <span class="gradient-text" data-i18n="synth_title_2">Dataset</span> <span data-i18n="synth_title_3">Anda</span></h1>
+        <p class="tool-subtitle" data-i18n="synth_subtitle">Upload dataset CSV Anda, atur parameter, dan generate data sintetis baru yang mempertahankan distribusi statistik asli.</p>
       </div>
 
       <!-- Stepper -->
       <div class="stepper">
         <div class="step active" data-step="1">
           <div class="step-dot">1</div>
-          <span>Dataset</span>
+          <span data-i18n="synth_step_dataset">Dataset</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="2">
           <div class="step-dot">2</div>
-          <span>Sintesis</span>
+          <span data-i18n="synth_step_synthesis">Sintesis</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="3">
           <div class="step-dot">3</div>
-          <span>Hasil</span>
+          <span data-i18n="synth_step_results">Hasil</span>
         </div>
       </div>
 
       <!-- ===== STEP 1: UPLOAD ===== -->
       <section class="tool-step" id="step1">
         <div class="card">
-          <h2 class="card-title">📁 Upload Dataset</h2>
-          <p class="card-desc">Upload file CSV Anda. Ukuran maksimal 10MB.</p>
+          <h2 class="card-title"><span aria-hidden="true">📁</span> <span data-i18n="synth_step1_title">Upload Dataset</span></h2>
+          <p class="card-desc" data-i18n="synth_step1_desc">Upload file CSV Anda. Ukuran maksimal 10MB.</p>
 
           <div class="upload-zone" id="uploadZone">
             <div class="upload-icon">📤</div>
-            <h3>Drag & Drop file CSV di sini</h3>
-            <p>atau klik untuk memilih file</p>
+            <h3 data-i18n="synth_upload_drag_title">Drag & Drop file CSV di sini</h3>
+            <p data-i18n="synth_upload_drag_sub">atau klik untuk memilih file</p>
             <input type="file" id="fileInput" accept=".csv" hidden>
-            <button class="btn-upload" id="btnBrowse">Pilih File</button>
+            <button class="btn-upload" id="btnBrowse" data-i18n="synth_upload_choose">Pilih File</button>
           </div>
 
           <div class="sample-divider">
-            <span>atau coba dengan data sample</span>
+            <span data-i18n="synth_or_sample">atau coba dengan data sample</span>
           </div>
-          <button class="btn-sample" id="btnSample">🏥 Gunakan Data Sample (30 pasien)</button>
+          <button class="btn-sample" id="btnSample"><span aria-hidden="true">🏥</span> <span data-i18n="synth_use_sample">Gunakan Data Sample (30 pasien)</span></button>
 
           <div class="file-info hidden" id="fileInfo">
             <div class="file-meta">
@@ -93,7 +97,7 @@
 
           <!-- Data Preview -->
           <div class="data-preview hidden" id="dataPreview">
-            <h3 class="preview-title">📊 Preview Data (5 baris pertama)</h3>
+            <h3 class="preview-title"><span aria-hidden="true">📊</span> <span data-i18n="synth_preview_title">Preview Data (5 baris pertama)</span></h3>
             <div class="table-wrapper">
               <table id="previewTable"></table>
             </div>
@@ -102,15 +106,15 @@
 
           <!-- Column Selector (Moved to Step 1) -->
           <div class="config-item full-width hidden" id="colSelectionStep1" style="margin-top:24px; background:rgba(13,148,136,0.04); border-radius:12px; border:1px solid rgba(13,148,136,0.1); padding:20px;">
-            <label class="config-label" style="margin-bottom:4px;">🎯 Pilih Kolom Target</label>
-            <p class="config-help" style="margin-bottom:12px;">Pilih kolom-kolom yang ingin Anda sertakan dalam proses sintesis AI.</p>
+            <label class="config-label" style="margin-bottom:4px;"><span aria-hidden="true">🎯</span> <span data-i18n="synth_pick_columns">Pilih Kolom Target</span></label>
+            <p class="config-help" style="margin-bottom:12px;" data-i18n="synth_pick_columns_help">Pilih kolom-kolom yang ingin Anda sertakan dalam proses sintesis AI.</p>
             <div class="column-list" id="columnList">
               <!-- Injected by JS -->
             </div>
           </div>
 
           <div class="step-actions">
-            <button class="btn-primary disabled" id="btnNext1" disabled>Lanjut ke Konfigurasi →</button>
+            <button class="btn-primary disabled" id="btnNext1" disabled data-i18n="synth_next_to_config">Lanjut ke Konfigurasi →</button>
           </div>
         </div>
       </section>
@@ -119,113 +123,113 @@
       <section class="tool-step hidden" id="step2">
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Konfigurasi Pengayaan Data</h2>
-            <p class="card-desc">Atur parameter model AI untuk menghasilkan dataset sintetis terbaik.</p>
+            <h2 class="card-title" data-i18n="synth_step2_title">Konfigurasi Pengayaan Data</h2>
+            <p class="card-desc" data-i18n="synth_step2_desc">Atur parameter model AI untuk menghasilkan dataset sintetis terbaik.</p>
           </div>
 
           <!-- Inline notice (errors/retry) -->
           <div id="processNotice" class="notice notice-error hidden" role="alert" aria-live="polite">
             <div class="notice-body">
-              <div class="notice-title" id="processNoticeTitle">Terjadi kendala</div>
+              <div class="notice-title" id="processNoticeTitle" data-i18n="synth_notice_title">Terjadi kendala</div>
               <div class="notice-text" id="processNoticeText">-</div>
             </div>
             <div class="notice-actions">
-              <button class="btn-upload" id="processNoticeRetry" type="button">Coba lagi</button>
-              <button class="btn-icon" id="processNoticeClose" type="button" aria-label="Tutup">✕</button>
+              <button class="btn-upload" id="processNoticeRetry" type="button" data-i18n="common_retry">Coba lagi</button>
+              <button class="btn-icon" id="processNoticeClose" type="button" data-i18n-aria-label="common_close" aria-label="Tutup">✕</button>
             </div>
           </div>
 
           <div class="config-grid">
             <!-- Multiplier -->
             <div class="config-item">
-              <label class="config-label">Faktor Augmentasi</label>
-              <p class="config-help">Berapa kali lipat data yang ingin dihasilkan</p>
+              <label class="config-label" data-i18n="synth_multiplier_label">Faktor Augmentasi</label>
+              <p class="config-help" data-i18n="synth_multiplier_help">Berapa kali lipat data yang ingin dihasilkan</p>
               <div class="multiplier-control">
                 <button class="mult-btn" id="multMinus">−</button>
                 <div class="mult-display">
                   <span class="mult-value" id="multValue">2</span>
-                  <span class="mult-suffix">kali lipat</span>
+                  <span class="mult-suffix" data-i18n="synth_multiplier_suffix">kali lipat</span>
                 </div>
                 <button class="mult-btn" id="multPlus">+</button>
               </div>
-              <div class="output-estimate" id="outputEstimate">Estimasi: 60 baris output</div>
+              <div class="output-estimate" id="outputEstimate" data-i18n="synth_output_estimate">Estimasi: 60 baris output</div>
             </div>
 
             <!-- AI Model Selection -->
             <div class="config-item">
-              <label class="config-label">Arsitektur AI Neural</label>
-              <p class="config-help">Pilih algoritma deep learning yang digunakan</p>
+              <label class="config-label" data-i18n="synth_model_label">Arsitektur AI Neural</label>
+              <p class="config-help" data-i18n="synth_model_help">Pilih algoritma deep learning yang digunakan</p>
               <div class="model-select">
                 <label class="model-radio">
                   <input type="radio" name="ganModel" value="ctgan" checked>
-                  <span><strong>CTGAN</strong> (Standard)</span>
+                  <span><strong>CTGAN</strong> <span data-i18n="synth_model_ctgan_suffix">(Standard)</span></span>
                 </label>
                 <label class="model-radio">
                   <input type="radio" name="ganModel" value="tvae">
-                  <span><strong>TVAE</strong> (High Precision)</span>
+                  <span><strong>TVAE</strong> <span data-i18n="synth_model_tvae_suffix">(High Precision)</span></span>
                 </label>
               </div>
-              <p class="adv-help">TVAE sering kali lebih akurat untuk dataset kecil (< 100 baris).</p>
+              <p class="adv-help" data-i18n="synth_model_hint">TVAE sering kali lebih akurat untuk dataset kecil (< 100 baris).</p>
             </div>
 
             <!-- Training Intensity -->
             <div class="config-item">
-              <label class="config-label">Intensitas Training (Epochs)</label>
-              <p class="config-help">Semakin tinggi, semakin akurat namun lebih lambat</p>
+              <label class="config-label" data-i18n="synth_epochs_label">Intensitas Training (Epochs)</label>
+              <p class="config-help" data-i18n="synth_epochs_help">Semakin tinggi, semakin akurat namun lebih lambat</p>
               <input type="range" id="epochSlider" min="100" max="1000" step="100" value="300" class="noise-slider">
               <div class="epoch-labels">
-                <span>Cepat (100)</span>
+                <span><span data-i18n="synth_speed">Cepat</span> (100)</span>
                 <span class="epoch-value" id="epochValue">300</span>
-                <span>Akurat (1000)</span>
+                <span><span data-i18n="synth_accurate">Akurat</span> (1000)</span>
               </div>
             </div>
           </div>
 
           <div class="step-actions">
-            <button class="btn-secondary" id="back2">Kembali</button>
-            <button class="btn-primary" id="next2">Mulai Sintesis ⚡</button>
+            <button class="btn-secondary" id="back2" data-i18n="common_back">Kembali</button>
+            <button class="btn-primary" id="next2" data-i18n="synth_start">Mulai Sintesis ⚡</button>
           </div>
 
           <!-- Progress Section (appears after clicking Start) -->
           <div id="generationSection" class="generation-section hidden" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(13,148,136,0.15);">
-            <h3 style="font-size: 1.1rem; margin-bottom: 8px;">🔬 Proses Sintesis AI</h3>
-            <p class="card-desc" style="margin-bottom: 16px;">Model sedang menganalisis pola dan menghasilkan data sintetis...</p>
+            <h3 style="font-size: 1.1rem; margin-bottom: 8px;"><span aria-hidden="true">🔬</span> <span data-i18n="synth_progress_title">Proses Sintesis AI</span></h3>
+            <p class="card-desc" style="margin-bottom: 16px;" data-i18n="synth_progress_desc">Model sedang menganalisis pola dan menghasilkan data sintetis...</p>
 
             <div class="run-summary" id="runSummary">
               <div class="run-summary-grid">
                 <div class="run-summary-item">
-                  <div class="run-summary-label">Dataset</div>
+                  <div class="run-summary-label" data-i18n="synth_run_dataset">Dataset</div>
                   <div class="run-summary-value" id="runDataset">-</div>
                 </div>
                 <div class="run-summary-item">
-                  <div class="run-summary-label">Kolom</div>
+                  <div class="run-summary-label" data-i18n="synth_run_columns">Kolom</div>
                   <div class="run-summary-value" id="runColumns">-</div>
                 </div>
                 <div class="run-summary-item">
-                  <div class="run-summary-label">Model</div>
+                  <div class="run-summary-label" data-i18n="synth_run_model">Model</div>
                   <div class="run-summary-value" id="runModel">-</div>
                 </div>
                 <div class="run-summary-item">
-                  <div class="run-summary-label">Epochs</div>
+                  <div class="run-summary-label" data-i18n="synth_run_epochs">Epochs</div>
                   <div class="run-summary-value" id="runEpochs">-</div>
                 </div>
                 <div class="run-summary-item">
-                  <div class="run-summary-label">Target Output</div>
+                  <div class="run-summary-label" data-i18n="synth_run_target">Target Output</div>
                   <div class="run-summary-value" id="runTarget">-</div>
                 </div>
                 <div class="run-summary-item">
-                  <div class="run-summary-label">Session</div>
+                  <div class="run-summary-label" data-i18n="synth_run_session">Session</div>
                   <div class="run-summary-value" id="runSession">-</div>
                 </div>
               </div>
-              <div class="run-summary-hint">Tips: selama proses berjalan, jangan refresh/menutup tab agar progress tidak terputus.</div>
+              <div class="run-summary-hint" data-i18n="synth_run_hint">Tips: selama proses berjalan, jangan refresh/menutup tab agar progress tidak terputus.</div>
             </div>
 
             <div class="generation-progress">
               <div class="gen-step active" id="genStep1">
                 <div class="gen-icon">📊</div>
                 <div class="gen-info">
-                  <div class="gen-label">Menganalisis distribusi kolom...</div>
+                  <div class="gen-label" data-i18n="synth_gen_1">Menganalisis distribusi kolom...</div>
                   <div class="gen-bar"><div class="gen-fill" id="genFill1"></div></div>
                 </div>
                 <span class="gen-status" id="genStatus1">⏳</span>
@@ -233,7 +237,7 @@
               <div class="gen-step" id="genStep2">
                 <div class="gen-icon">🧮</div>
                 <div class="gen-info">
-                  <div class="gen-label">Menghitung parameter statistik...</div>
+                  <div class="gen-label" data-i18n="synth_gen_2">Menghitung parameter statistik...</div>
                   <div class="gen-bar"><div class="gen-fill" id="genFill2"></div></div>
                 </div>
                 <span class="gen-status" id="genStatus2">⏳</span>
@@ -241,7 +245,7 @@
               <div class="gen-step" id="genStep3">
                 <div class="gen-icon">🧬</div>
                 <div class="gen-info">
-                  <div class="gen-label">Men-generate data sintetis...</div>
+                  <div class="gen-label" data-i18n="synth_gen_3">Men-generate data sintetis...</div>
                   <div class="gen-bar"><div class="gen-fill" id="genFill3"></div></div>
                 </div>
                 <span class="gen-status" id="genStatus3">⏳</span>
@@ -249,7 +253,7 @@
               <div class="gen-step" id="genStep4">
                 <div class="gen-icon">✅</div>
                 <div class="gen-info">
-                  <div class="gen-label">Validasi kualitas & konsistensi...</div>
+                  <div class="gen-label" data-i18n="synth_gen_4">Validasi kualitas & konsistensi...</div>
                   <div class="gen-bar"><div class="gen-fill" id="genFill4"></div></div>
                 </div>
                 <span class="gen-status" id="genStatus4">⏳</span>
@@ -258,7 +262,7 @@
 
             <div class="gen-overall">
               <div class="gen-overall-bar"><div class="gen-overall-fill" id="genOverallFill"></div></div>
-              <div class="gen-overall-text" id="genOverallText">0% selesai</div>
+              <div class="gen-overall-text" id="genOverallText" data-i18n="synth_overall_initial">0% selesai</div>
             </div>
           </div>
 
@@ -268,26 +272,26 @@
       <!-- ===== STEP 3: RESULTS ===== -->
       <section class="tool-step hidden" id="step3">
         <div class="card">
-          <h2 class="card-title">✅ Sintesis Selesai!</h2>
-          <p class="card-desc">Dataset sintetis berhasil dihasilkan. Berikut hasil dan statistik kualitasnya.</p>
+          <h2 class="card-title"><span aria-hidden="true">✅</span> <span data-i18n="synth_done_title">Sintesis Selesai!</span></h2>
+          <p class="card-desc" data-i18n="synth_done_desc">Dataset sintetis berhasil dihasilkan. Berikut hasil dan statistik kualitasnya.</p>
 
           <!-- Quality Report -->
           <div class="quality-report" id="qualityReport">
-            <h3 class="report-title">📋 Laporan Kualitas</h3>
+            <h3 class="report-title"><span aria-hidden="true">📋</span> <span data-i18n="synth_quality_title">Laporan Kualitas</span></h3>
             <div class="quality-grid" id="qualityGrid"></div>
           </div>
 
           <!-- Result Preview -->
           <div class="result-preview">
             <div class="result-tabs">
-              <button class="result-tab active" data-tab="synthetic">Data Sintetis</button>
-              <button class="result-tab" data-tab="comparison">Perbandingan</button>
+              <button class="result-tab active" data-tab="synthetic" data-i18n="synth_tab_synthetic">Data Sintetis</button>
+              <button class="result-tab" data-tab="comparison" data-i18n="synth_tab_comparison">Perbandingan</button>
             </div>
             <div class="tab-content active" id="tab-synthetic">
               <div class="table-wrapper">
                 <table id="resultTable"></table>
               </div>
-              <p class="table-note">Menampilkan 10 baris pertama dari <span id="totalRows">0</span> baris</p>
+              <p class="table-note"><span data-i18n="synth_table_note_prefix">Menampilkan 10 baris pertama dari</span> <span id="totalRows">0</span> <span data-i18n="unit_rows">baris</span></p>
             </div>
             <div class="tab-content" id="tab-comparison">
               <div class="comparison-grid" id="comparisonGrid"></div>
@@ -295,8 +299,8 @@
           </div>
 
           <div class="step-actions">
-            <button class="btn-secondary" id="btnNewSynthesis">🔄 Sintesis Baru</button>
-            <button class="btn-primary" id="btnDownload">📥 Download CSV</button>
+            <button class="btn-secondary" id="btnNewSynthesis"><span aria-hidden="true">🔄</span> <span data-i18n="synth_new">Sintesis Baru</span></button>
+            <button class="btn-primary" id="btnDownload"><span aria-hidden="true">📥</span> <span data-i18n="synth_download">Download CSV</span></button>
           </div>
         </div>
       </section>
@@ -307,10 +311,11 @@
   <!-- Footer -->
   <footer class="tool-footer">
     <div class="container">
-      <p>© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
+      <p data-i18n="footer_tagline">© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
     </div>
   </footer>
 
+  <script src="../scripts/i18n.js"></script>
   <script src="../scripts/synthesize.js"></script>
 </body>
 </html>

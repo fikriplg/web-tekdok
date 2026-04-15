@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SynthMed — Dokumentasi</title>
+  <title data-i18n="page_title_docs">SynthMed — Dokumentasi</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧬</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,12 +20,16 @@
         SynthMed
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="index.html">Beranda</a>
-        <a href="docs.html" class="active">Dokumentasi</a>
-        <a href="synthesize.html">Synthesizer</a>
-        <a href="synthesize.html" class="nav-cta">Mulai Riset</a>
+        <a href="index.html" data-i18n="nav_home">Beranda</a>
+        <a href="docs.html" class="active" data-i18n="nav_docs">Dokumentasi</a>
+        <a href="synthesize.html" data-i18n="nav_synth">Synthesizer</a>
+        <a href="synthesize.html" class="nav-cta" data-i18n="nav_cta">Mulai Riset</a>
       </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <button class="lang-toggle" id="langToggle" data-i18n-aria-label="aria_toggle_language" aria-label="Ganti bahasa">
+        <span class="lang-flag">🇮🇩</span>
+        <span class="lang-text" id="langText">ID</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" data-i18n-aria-label="aria_toggle_menu" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -34,12 +38,12 @@
   <!-- HERO DOCS -->
   <header class="docs-hero">
     <div class="docs-hero-inner">
-      <span class="badge"><span class="badge-dot"></span> Dokumentasi</span>
-      <h1>Panduan Lengkap <span class="grad">SynthMed</span></h1>
-      <p>Pelajari cara menggunakan platform sintesis dataset kesehatan dari awal hingga mahir.</p>
+      <span class="badge"><span class="badge-dot"></span> <span data-i18n="docs_badge">Dokumentasi</span></span>
+      <h1><span data-i18n="docs_title">Panduan Lengkap</span> <span class="grad">SynthMed</span></h1>
+      <p data-i18n="docs_subtitle">Pelajari cara menggunakan platform sintesis dataset kesehatan dari awal hingga mahir.</p>
       <div class="hero-links">
-        <a href="#quick-start" class="hl-btn primary">🚀 Quick Start</a>
-        <a href="#faq" class="hl-btn secondary">❓ FAQ</a>
+        <a href="#quick-start" class="hl-btn primary">🚀 <span data-i18n="docs_quick_start">Quick Start</span></a>
+        <a href="#faq" class="hl-btn secondary">❓ <span data-i18n="docs_faq">FAQ</span></a>
       </div>
     </div>
   </header>
@@ -47,13 +51,13 @@
   <!-- TABLE OF CONTENTS -->
   <nav class="toc-bar">
     <div class="toc-inner">
-      <a href="#intro" class="toc-link">Pengantar</a>
-      <a href="#quick-start" class="toc-link">Quick Start</a>
-      <a href="#sample-data" class="toc-link">Data Sample</a>
-      <a href="#methods" class="toc-link">Metode</a>
-      <a href="#quality" class="toc-link">Kualitas</a>
-      <a href="#faq" class="toc-link">FAQ</a>
-      <a href="#citation" class="toc-link">Sitasi</a>
+      <a href="#intro" class="toc-link" data-i18n="docs_toc_intro">Pengantar</a>
+      <a href="#quick-start" class="toc-link" data-i18n="docs_toc_quick">Quick Start</a>
+      <a href="#sample-data" class="toc-link" data-i18n="docs_toc_sample">Data Sample</a>
+      <a href="#methods" class="toc-link" data-i18n="docs_toc_methods">Metode</a>
+      <a href="#quality" class="toc-link" data-i18n="docs_toc_quality">Kualitas</a>
+      <a href="#faq" class="toc-link" data-i18n="docs_toc_faq">FAQ</a>
+      <a href="#citation" class="toc-link" data-i18n="docs_toc_citation">Sitasi</a>
     </div>
   </nav>
 
@@ -63,47 +67,47 @@
     <!-- PENGANTAR -->
     <section class="doc-section" id="intro">
       <div class="section-head">
-        <span class="sec-badge">Memulai</span>
-        <h2>Apa itu SynthMed?</h2>
+        <span class="sec-badge" data-i18n="docs_sec_getting_started">Memulai</span>
+        <h2 data-i18n="docs_intro_h2">Apa itu SynthMed?</h2>
       </div>
       <div class="section-body">
         <div class="callout callout-info">
           <span class="callout-icon">💡</span>
-          <div>
-            <strong>SynthMed</strong> adalah platform riset terbuka dan <strong>100% gratis</strong> yang membantu peneliti kesehatan untuk mengaugmentasi (memperbanyak) dataset mereka menggunakan metode AI Generative (GAN & TVAE).
+          <div data-i18n-html="docs_intro_callout_html">
+            <strong>SynthMed</strong> adalah platform riset terbuka dan <strong>100% gratis</strong> yang membantu peneliti kesehatan untuk mengaugmentasi (memperbanyak) dataset mereka menggunakan metode AI Generative (GAN &amp; TVAE).
             Data Anda diproses secara transien di server kami untuk proses training AI dan otomatis dihapus secara berkala untuk menjamin privasi.
           </div>
         </div>
-        <h3>Mengapa Data Sintesis?</h3>
-        <p>Dalam penelitian kesehatan, akses ke data pasien seringkali terbatas karena regulasi privasi (HIPAA, GDPR). Data sintesis memungkinkan peneliti untuk:</p>
+        <h3 data-i18n="docs_intro_why_h3">Mengapa Data Sintesis?</h3>
+        <p data-i18n="docs_intro_why_p">Dalam penelitian kesehatan, akses ke data pasien seringkali terbatas karena regulasi privasi (HIPAA, GDPR). Data sintesis memungkinkan peneliti untuk:</p>
         <ul>
-          <li>Memperbanyak dataset kecil menjadi dataset besar (2x - 100x lipat)</li>
-          <li>Mempertahankan distribusi statistik yang sama dengan data asli</li>
-          <li>Menghindari pelanggaran privasi pasien</li>
-          <li>Meningkatkan akurasi model prediktif dengan lebih banyak data training</li>
+          <li data-i18n="docs_intro_why_li1">Memperbanyak dataset kecil menjadi dataset besar (2x - 100x lipat)</li>
+          <li data-i18n="docs_intro_why_li2">Mempertahankan distribusi statistik yang sama dengan data asli</li>
+          <li data-i18n="docs_intro_why_li3">Menghindari pelanggaran privasi pasien</li>
+          <li data-i18n="docs_intro_why_li4">Meningkatkan akurasi model prediktif dengan lebih banyak data training</li>
         </ul>
 
-        <h3>Fitur Utama</h3>
+        <h3 data-i18n="docs_intro_features_h3">Fitur Utama</h3>
         <div class="features-row">
           <div class="feat-card">
             <div class="feat-icon">📤</div>
-            <h4>Upload & Analisis</h4>
-            <p>Upload CSV, sistem otomatis deteksi tipe kolom dan distribusi data.</p>
+            <h4 data-i18n="docs_intro_feat1_title">Upload &amp; Analisis</h4>
+            <p data-i18n="docs_intro_feat1_desc">Upload CSV, sistem otomatis deteksi tipe kolom dan distribusi data.</p>
           </div>
           <div class="feat-card">
             <div class="feat-icon">🔬</div>
-            <h4>2 Arsitektur Neural</h4>
-            <p>Pilih antara CTGAN untuk dataset besar atau TVAE untuk dataset kecil/sensitif.</p>
+            <h4 data-i18n="docs_intro_feat2_title">2 Arsitektur Neural</h4>
+            <p data-i18n="docs_intro_feat2_desc">Pilih antara CTGAN untuk dataset besar atau TVAE untuk dataset kecil/sensitif.</p>
           </div>
           <div class="feat-card">
             <div class="feat-icon">📊</div>
-            <h4>Laporan Kualitas</h4>
-            <p>Perbandingan distribusi data asli vs sintetis otomatis.</p>
+            <h4 data-i18n="docs_intro_feat3_title">Laporan Kualitas</h4>
+            <p data-i18n="docs_intro_feat3_desc">Perbandingan distribusi data asli vs sintetis otomatis.</p>
           </div>
           <div class="feat-card">
             <div class="feat-icon">📥</div>
-            <h4>Download Instan</h4>
-            <p>Unduh dataset sintetis dalam format CSV langsung dari browser.</p>
+            <h4 data-i18n="docs_intro_feat4_title">Download Instan</h4>
+            <p data-i18n="docs_intro_feat4_desc">Unduh dataset sintetis dalam format CSV langsung dari browser.</p>
           </div>
         </div>
       </div>
@@ -112,36 +116,36 @@
     <!-- QUICK START -->
     <section class="doc-section" id="quick-start">
       <div class="section-head">
-        <span class="sec-badge">Memulai</span>
-        <h2>Quick Start</h2>
+        <span class="sec-badge" data-i18n="docs_sec_getting_started">Memulai</span>
+        <h2 data-i18n="docs_qs_h2">Quick Start</h2>
       </div>
       <div class="section-body">
-        <p>Ikuti 4 langkah sederhana untuk membuat dataset sintetis pertama Anda:</p>
+        <p data-i18n="docs_qs_p">Ikuti 4 langkah sederhana untuk membuat dataset sintetis pertama Anda:</p>
         <div class="steps-row">
           <div class="step-card">
             <div class="step-num">1</div>
-            <h4>Upload Dataset CSV</h4>
-            <p>Buka <a href="synthesize.html">Synthesizer</a>, upload file CSV atau klik <strong>"Gunakan Data Sample"</strong> untuk mencoba langsung.</p>
+            <h4 data-i18n="docs_qs_step1_title">Upload Dataset CSV</h4>
+            <p data-i18n-html="docs_qs_step1_desc_html">Buka <a href="synthesize.html">Synthesizer</a>, upload file CSV atau klik <strong>"Gunakan Data Sample"</strong> untuk mencoba langsung.</p>
           </div>
           <div class="step-card">
             <div class="step-num">2</div>
-            <h4>Atur Konfigurasi</h4>
-            <p>Pilih multiplier (2x-100x), kolom target, metode sintesis, dan level variasi (noise).</p>
+            <h4 data-i18n="docs_qs_step2_title">Atur Konfigurasi</h4>
+            <p data-i18n="docs_qs_step2_desc">Pilih multiplier (2x-100x), kolom target, metode sintesis, dan intensitas training (epochs).</p>
           </div>
           <div class="step-card">
             <div class="step-num">3</div>
-            <h4>Generate Data</h4>
-            <p>Klik "Mulai Generate" dan tunggu proses selesai. AI akan menganalisis pola dan menghasilkan data baru.</p>
+            <h4 data-i18n="docs_qs_step3_title">Generate Data</h4>
+            <p data-i18n="docs_qs_step3_desc">Klik "Mulai Sintesis" dan tunggu proses selesai. AI akan menganalisis pola dan menghasilkan data baru.</p>
           </div>
           <div class="step-card">
             <div class="step-num">4</div>
-            <h4>Review & Download</h4>
-            <p>Periksa laporan kualitas, bandingkan distribusi, lalu unduh file CSV hasil sintesis.</p>
+            <h4 data-i18n="docs_qs_step4_title">Review &amp; Download</h4>
+            <p data-i18n="docs_qs_step4_desc">Periksa laporan kualitas, bandingkan distribusi, lalu unduh file CSV hasil sintesis.</p>
           </div>
         </div>
         <div class="callout callout-success">
           <span class="callout-icon">🎯</span>
-          <div><strong>Tips:</strong> Gunakan <a href="#sample-data">data sample</a> terlebih dahulu untuk memahami cara kerja platform.</div>
+          <div data-i18n-html="docs_qs_tip_html"><strong>Tips:</strong> Gunakan <a href="#sample-data">data sample</a> terlebih dahulu untuk memahami cara kerja platform.</div>
         </div>
       </div>
     </section>
@@ -149,43 +153,43 @@
     <!-- SAMPLE DATA -->
     <section class="doc-section" id="sample-data">
       <div class="section-head">
-        <span class="sec-badge">Memulai</span>
-        <h2>Data Sample</h2>
+        <span class="sec-badge" data-i18n="docs_sec_getting_started">Memulai</span>
+        <h2 data-i18n="docs_sample_h2">Data Sample</h2>
       </div>
       <div class="section-body">
-        <p>Kami menyediakan dataset sample berisi <strong>30 record pasien</strong> dengan <strong>10 kolom</strong> untuk mencoba platform:</p>
+        <p data-i18n-html="docs_sample_p_html">Kami menyediakan dataset sample berisi <strong>30 record pasien</strong> dengan <strong>10 kolom</strong> untuk mencoba platform:</p>
 
         <div class="sample-box">
           <div class="sample-info">
-            <h4>🏥 Data Pasien Kesehatan</h4>
-            <p>Berisi data demografi, vital signs, lab results, dan diagnosis. Cocok untuk latihan augmentasi data klinik.</p>
+            <h4 data-i18n="docs_sample_box_title">🏥 Data Pasien Kesehatan</h4>
+            <p data-i18n="docs_sample_box_desc">Berisi data demografi, vital signs, lab results, dan diagnosis. Cocok untuk latihan augmentasi data klinik.</p>
             <div class="tag-row">
-              <span class="tag">30 baris</span>
-              <span class="tag">10 kolom</span>
-              <span class="tag">7 numerik</span>
-              <span class="tag">3 kategorikal</span>
+              <span class="tag" data-i18n="docs_sample_tag_rows">30 baris</span>
+              <span class="tag" data-i18n="docs_sample_tag_cols">10 kolom</span>
+              <span class="tag" data-i18n="docs_sample_tag_numeric">7 numerik</span>
+              <span class="tag" data-i18n="docs_sample_tag_categorical">3 kategorikal</span>
             </div>
           </div>
-          <a href="../../data/sample_dataset.csv" download class="dl-btn">📥 Download CSV</a>
+          <a href="../../data/sample_dataset.csv" download class="dl-btn" data-i18n="docs_sample_download">📥 Download CSV</a>
         </div>
 
-        <h3>Detail Kolom</h3>
+        <h3 data-i18n="docs_sample_details_h3">Detail Kolom</h3>
         <div class="table-box">
           <table>
             <thead>
-              <tr><th>Kolom</th><th>Tipe</th><th>Deskripsi</th><th>Contoh</th></tr>
+              <tr><th data-i18n="docs_sample_th_col">Kolom</th><th data-i18n="docs_sample_th_type">Tipe</th><th data-i18n="docs_sample_th_desc">Deskripsi</th><th data-i18n="docs_sample_th_example">Contoh</th></tr>
             </thead>
             <tbody>
-              <tr><td><code>patient_id</code></td><td>Kategorikal</td><td>ID unik pasien</td><td>P001</td></tr>
-              <tr><td><code>age</code></td><td>Numerik</td><td>Usia pasien (tahun)</td><td>45</td></tr>
-              <tr><td><code>gender</code></td><td>Kategorikal</td><td>Jenis kelamin</td><td>Laki-laki</td></tr>
-              <tr><td><code>blood_pressure_systolic</code></td><td>Numerik</td><td>Tekanan darah sistolik (mmHg)</td><td>130</td></tr>
-              <tr><td><code>blood_pressure_diastolic</code></td><td>Numerik</td><td>Tekanan darah diastolik (mmHg)</td><td>85</td></tr>
-              <tr><td><code>heart_rate</code></td><td>Numerik</td><td>Detak jantung (bpm)</td><td>78</td></tr>
-              <tr><td><code>cholesterol_total</code></td><td>Numerik</td><td>Total kolesterol (mg/dL)</td><td>210</td></tr>
-              <tr><td><code>blood_sugar</code></td><td>Numerik</td><td>Gula darah (mg/dL)</td><td>105</td></tr>
-              <tr><td><code>bmi</code></td><td>Numerik</td><td>Body Mass Index</td><td>27.3</td></tr>
-              <tr><td><code>diagnosis</code></td><td>Kategorikal</td><td>Diagnosis utama</td><td>Hipertensi</td></tr>
+              <tr><td><code>patient_id</code></td><td data-i18n="docs_type_categorical">Kategorikal</td><td data-i18n="docs_sample_col_patient_id_desc">ID unik pasien</td><td>P001</td></tr>
+              <tr><td><code>age</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_age_desc">Usia pasien (tahun)</td><td>45</td></tr>
+              <tr><td><code>gender</code></td><td data-i18n="docs_type_categorical">Kategorikal</td><td data-i18n="docs_sample_col_gender_desc">Jenis kelamin</td><td>Laki-laki</td></tr>
+              <tr><td><code>blood_pressure_systolic</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_bp_sys_desc">Tekanan darah sistolik (mmHg)</td><td>130</td></tr>
+              <tr><td><code>blood_pressure_diastolic</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_bp_dia_desc">Tekanan darah diastolik (mmHg)</td><td>85</td></tr>
+              <tr><td><code>heart_rate</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_hr_desc">Detak jantung (bpm)</td><td>78</td></tr>
+              <tr><td><code>cholesterol_total</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_chol_desc">Total kolesterol (mg/dL)</td><td>210</td></tr>
+              <tr><td><code>blood_sugar</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_sugar_desc">Gula darah (mg/dL)</td><td>105</td></tr>
+              <tr><td><code>bmi</code></td><td data-i18n="docs_type_numeric">Numerik</td><td data-i18n="docs_sample_col_bmi_desc">Body Mass Index</td><td>27.3</td></tr>
+              <tr><td><code>diagnosis</code></td><td data-i18n="docs_type_categorical">Kategorikal</td><td data-i18n="docs_sample_col_dx_desc">Diagnosis utama</td><td>Hipertensi</td></tr>
             </tbody>
           </table>
         </div>
@@ -195,71 +199,71 @@
     <!-- METODE SINTESIS -->
     <section class="doc-section" id="methods">
       <div class="section-head">
-        <span class="sec-badge">Referensi Teknis</span>
-        <h2>Arsitektur Neural AI</h2>
+        <span class="sec-badge" data-i18n="docs_sec_tech_ref">Referensi Teknis</span>
+        <h2 data-i18n="docs_methods_h2">Arsitektur Neural AI</h2>
       </div>
       <div class="section-body">
-        <p>SynthMed menggunakan teknologi Deep Learning terbaru (Generative Adversarial Networks & Variational Autoencoders) untuk mensintesis data medis. Pilih model yang sesuai dengan karakteristik dataset Anda:</p>
+        <p data-i18n="docs_methods_p">SynthMed menggunakan teknologi Deep Learning terbaru (Generative Adversarial Networks & Variational Autoencoders) untuk mensintesis data medis. Pilih model yang sesuai dengan karakteristik dataset Anda:</p>
 
         <div class="compare-row">
           <div class="compare-card">
             <div class="cc-header blue">
               <span>🧬</span>
-              <h4>CTGAN Model</h4>
+              <h4 data-i18n="docs_methods_ctgan_title">CTGAN Model</h4>
             </div>
-            <p>Model Generative Adversarial Network yang dioptimalkan untuk data tabular. Menggunakan generator dan discriminator untuk menciptakan data baru yang identik secara statistik.</p>
-            <h5>🔧 Cara Kerja:</h5>
+            <p data-i18n="docs_methods_ctgan_desc">Model Generative Adversarial Network yang dioptimalkan untuk data tabular. Menggunakan generator dan discriminator untuk menciptakan data baru yang identik secara statistik.</p>
+            <h5 data-i18n="docs_methods_how_h5">🔧 Cara Kerja:</h5>
             <ol>
-              <li>Identifikasi korelasi antar kolom (multivariate analysis)</li>
-              <li>Training Neural Network untuk menebak distribusi asli</li>
-              <li>Generasi data sintetis dengan high-diversity</li>
+              <li data-i18n="docs_methods_ctgan_how1">Identifikasi korelasi antar kolom (multivariate analysis)</li>
+              <li data-i18n="docs_methods_ctgan_how2">Training Neural Network untuk menebak distribusi asli</li>
+              <li data-i18n="docs_methods_ctgan_how3">Generasi data sintetis dengan high-diversity</li>
             </ol>
-            <h5>✅ Kelebihan:</h5>
+            <h5 data-i18n="docs_methods_pros_h5">✅ Kelebihan:</h5>
             <ul>
-              <li>Mampu menangani dataset besar (>1000 baris)</li>
-              <li>Sangat variatif dan inovatif dalam menghasilkan data baru</li>
+              <li data-i18n="docs_methods_ctgan_pro1">Mampu menangani dataset besar (>1000 baris)</li>
+              <li data-i18n="docs_methods_ctgan_pro2">Sangat variatif dan inovatif dalam menghasilkan data baru</li>
             </ul>
-            <div class="cc-best">Terbaik untuk: Dataset besar & kompleks</div>
+            <div class="cc-best" data-i18n="docs_methods_ctgan_best">Terbaik untuk: Dataset besar & kompleks</div>
           </div>
 
           <div class="compare-card">
             <div class="cc-header green">
               <span>🔬</span>
-              <h4>TVAE Model</h4>
+              <h4 data-i18n="docs_methods_tvae_title">TVAE Model</h4>
             </div>
-            <p>Tabular Variational Autoencoder yang menggunakan sistem encoder-decoder untuk memetakan data ke ruang laten.</p>
-            <h5>🔧 Cara Kerja:</h5>
+            <p data-i18n="docs_methods_tvae_desc">Tabular Variational Autoencoder yang menggunakan sistem encoder-decoder untuk memetakan data ke ruang laten.</p>
+            <h5 data-i18n="docs_methods_how_h5">🔧 Cara Kerja:</h5>
             <ol>
-              <li>Encoder mengompresi data asli ke bentuk matematis sederhana</li>
-              <li>Decoder membangun ulang data dari representasi laten tersebut</li>
-              <li>Regulasi statistik untuk menjaga akurasi distribusi</li>
+              <li data-i18n="docs_methods_tvae_how1">Encoder mengompresi data asli ke bentuk matematis sederhana</li>
+              <li data-i18n="docs_methods_tvae_how2">Decoder membangun ulang data dari representasi laten tersebut</li>
+              <li data-i18n="docs_methods_tvae_how3">Regulasi statistik untuk menjaga akurasi distribusi</li>
             </ol>
-            <h5>✅ Kelebihan:</h5>
+            <h5 data-i18n="docs_methods_pros_h5">✅ Kelebihan:</h5>
             <ul>
-              <li>Sangat akurat (Similarity Score tinggi)</li>
-              <li>Sangat stabil untuk dataset kecil (30-500 baris)</li>
+              <li data-i18n="docs_methods_tvae_pro1">Sangat akurat (Similarity Score tinggi)</li>
+              <li data-i18n="docs_methods_tvae_pro2">Sangat stabil untuk dataset kecil (30-500 baris)</li>
             </ul>
-            <div class="cc-best">Terbaik untuk: Dataset kecil & sensitif (EHR)</div>
+            <div class="cc-best" data-i18n="docs_methods_tvae_best">Terbaik untuk: Dataset kecil & sensitif (EHR)</div>
           </div>
         </div>
 
-        <h3>Parameter Konfigurasi</h3>
+        <h3 data-i18n="docs_methods_params_h3">Parameter Konfigurasi</h3>
         <div class="table-box">
           <table>
             <thead>
-              <tr><th>Parameter</th><th>Rentang</th><th>Rekomendasi</th><th>Deskripsi</th></tr>
+              <tr><th data-i18n="docs_methods_th_param">Parameter</th><th data-i18n="docs_methods_th_range">Rentang</th><th data-i18n="docs_methods_th_reco">Rekomendasi</th><th data-i18n="docs_methods_th_desc">Deskripsi</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>Multiplier</strong></td><td>2x – 100x</td><td>2x – 10x</td><td>Berapa kali lipat data output dari data asli</td></tr>
-              <tr><td><strong>Epochs</strong></td><td>100 – 1000</td><td>300 – 500</td><td>Jumlah iterasi training (semakin tinggi, semakin akurat)</td></tr>
-              <tr><td><strong>Model</strong></td><td>CTGAN / TVAE</td><td>TVAE (small)</td><td>Arsitektur neural yang digunakan sesuai ukuran data</td></tr>
+              <tr><td><strong>Multiplier</strong></td><td>2x – 100x</td><td>2x – 10x</td><td data-i18n="docs_methods_param_multiplier_desc">Berapa kali lipat data output dari data asli</td></tr>
+              <tr><td><strong>Epochs</strong></td><td>100 – 1000</td><td>300 – 500</td><td data-i18n="docs_methods_param_epochs_desc">Jumlah iterasi training (semakin tinggi, semakin akurat)</td></tr>
+              <tr><td><strong>Model</strong></td><td>CTGAN / TVAE</td><td>TVAE (small)</td><td data-i18n="docs_methods_param_model_desc">Arsitektur neural yang digunakan sesuai ukuran data</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="callout callout-warning">
           <span class="callout-icon">⚠️</span>
-          <div><strong>Perhatian:</strong> Epochs yang lebih tinggi menghasilkan model yang lebih akurat tetapi membutuhkan waktu training lebih lama. Untuk dataset medis, gunakan 300-500 epochs.</div>
+          <div data-i18n-html="docs_methods_warning_html"><strong>Perhatian:</strong> Epochs yang lebih tinggi menghasilkan model yang lebih akurat tetapi membutuhkan waktu training lebih lama. Untuk dataset medis, gunakan 300-500 epochs.</div>
         </div>
       </div>
     </section>
@@ -267,39 +271,39 @@
     <!-- KUALITAS -->
     <section class="doc-section" id="quality">
       <div class="section-head">
-        <span class="sec-badge">Referensi Teknis</span>
-        <h2>Metrik Kualitas</h2>
+        <span class="sec-badge" data-i18n="docs_sec_tech_ref">Referensi Teknis</span>
+        <h2 data-i18n="docs_quality_h2">Metrik Kualitas</h2>
       </div>
       <div class="section-body">
-        <p>Setiap hasil sintesis dilengkapi laporan kualitas otomatis. Berikut metrik yang digunakan:</p>
+        <p data-i18n="docs_quality_p">Setiap hasil sintesis dilengkapi laporan kualitas otomatis. Berikut metrik yang digunakan:</p>
 
         <h3>Distribution Similarity</h3>
-        <p>Mengukur seberapa mirip distribusi data sintetis dengan data asli berdasarkan perbandingan mean:</p>
+        <p data-i18n="docs_quality_dist_p">Mengukur seberapa mirip distribusi data sintetis dengan data asli berdasarkan perbandingan mean:</p>
         <div class="code-box">
-          <div class="code-title">Formula</div>
+          <div class="code-title" data-i18n="docs_quality_formula_title">Formula</div>
           <pre>similarity = 100 - |mean_asli - mean_sintetis| / |mean_asli| × 100</pre>
         </div>
 
         <div class="table-box">
           <table>
             <thead>
-              <tr><th>Skor</th><th>Rating</th><th>Interpretasi</th></tr>
+              <tr><th data-i18n="docs_quality_th_score">Skor</th><th data-i18n="docs_quality_th_rating">Rating</th><th data-i18n="docs_quality_th_interp">Interpretasi</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>> 95%</strong></td><td>🟢 Sangat Baik</td><td>Distribusi hampir identik dengan data asli</td></tr>
-              <tr><td><strong>85% – 95%</strong></td><td>🟡 Baik</td><td>Perbedaan minor, masih layak untuk riset</td></tr>
-              <tr><td><strong>70% – 85%</strong></td><td>🟠 Cukup</td><td>Perlu evaluasi lebih lanjut</td></tr>
-              <tr><td><strong>< 70%</strong></td><td>🔴 Kurang</td><td>Coba kurangi noise level</td></tr>
+              <tr><td><strong>> 95%</strong></td><td data-i18n="docs_quality_rating1">🟢 Sangat Baik</td><td data-i18n="docs_quality_interp1">Distribusi hampir identik dengan data asli</td></tr>
+              <tr><td><strong>85% – 95%</strong></td><td data-i18n="docs_quality_rating2">🟡 Baik</td><td data-i18n="docs_quality_interp2">Perbedaan minor, masih layak untuk riset</td></tr>
+              <tr><td><strong>70% – 85%</strong></td><td data-i18n="docs_quality_rating3">🟠 Cukup</td><td data-i18n="docs_quality_interp3">Perlu evaluasi lebih lanjut</td></tr>
+              <tr><td><strong>< 70%</strong></td><td data-i18n="docs_quality_rating4">🔴 Kurang</td><td data-i18n="docs_quality_interp4">Coba naikkan epochs, pilih TVAE, atau kurangi multiplier</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Informasi Tambahan</h3>
+        <h3 data-i18n="docs_quality_more_h3">Informasi Tambahan</h3>
         <ul>
-          <li><strong>Total Baris Generated</strong> — Jumlah baris data sintetis yang berhasil dibuat</li>
-          <li><strong>Kolom Disintesis</strong> — Jumlah kolom yang dipilih untuk diaugmentasi</li>
-          <li><strong>Faktor Augmentasi</strong> — Multiplier yang digunakan (misal: 5x)</li>
-          <li><strong>Tab Perbandingan</strong> — Mean, min, max data asli vs sintetis per kolom</li>
+          <li data-i18n-html="docs_quality_more_li1_html"><strong>Total Baris Generated</strong> — Jumlah baris data sintetis yang berhasil dibuat</li>
+          <li data-i18n-html="docs_quality_more_li2_html"><strong>Kolom Disintesis</strong> — Jumlah kolom yang dipilih untuk diaugmentasi</li>
+          <li data-i18n-html="docs_quality_more_li3_html"><strong>Faktor Augmentasi</strong> — Multiplier yang digunakan (misal: 5x)</li>
+          <li data-i18n-html="docs_quality_more_li4_html"><strong>Tab Perbandingan</strong> — Mean, min, max data asli vs sintetis per kolom</li>
         </ul>
       </div>
     </section>
@@ -307,38 +311,38 @@
     <!-- FAQ -->
     <section class="doc-section" id="faq">
       <div class="section-head">
-        <span class="sec-badge">Bantuan</span>
-        <h2>FAQ (Pertanyaan Umum)</h2>
+        <span class="sec-badge" data-i18n="docs_sec_help">Bantuan</span>
+        <h2 data-i18n="docs_faq_h2">FAQ (Pertanyaan Umum)</h2>
       </div>
       <div class="section-body">
         <div class="faq-list">
           <details class="faq" open>
-            <summary>Apakah SynthMed benar-benar gratis?</summary>
-            <div class="faq-body">Ya, 100% gratis tanpa batasan. Tidak ada paket berbayar, tidak perlu kartu kredit, dan akses penuh ke semua fitur.</div>
+            <summary data-i18n="docs_faq_q1">Apakah SynthMed benar-benar gratis?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a1">Ya, 100% gratis tanpa batasan. Tidak ada paket berbayar, tidak perlu kartu kredit, dan akses penuh ke semua fitur.</div>
           </details>
           <details class="faq">
-            <summary>Apakah data saya aman?</summary>
-            <div class="faq-body">Ya. Meskipun data dikirim ke server untuk diproses oleh arsitektur AI (karena membutuhkan resource komputasi tinggi), data tersebut diproses secara <strong>stateless & transien</strong>. Data tidak disimpan permanen dan session otomatis dihapus setelah 1 jam.</div>
+            <summary data-i18n="docs_faq_q2">Apakah data saya aman?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a2">Ya. Meskipun data dikirim ke server untuk diproses oleh arsitektur AI (karena membutuhkan resource komputasi tinggi), data tersebut diproses secara <strong>stateless &amp; transien</strong>. Data tidak disimpan permanen dan session otomatis dihapus setelah 1 jam.</div>
           </details>
           <details class="faq">
-            <summary>Berapa ukuran file maksimal yang bisa di-upload?</summary>
-            <div class="faq-body">Maksimal 10MB. Untuk file yang lebih besar, kami sarankan untuk membagi dataset menjadi beberapa bagian.</div>
+            <summary data-i18n="docs_faq_q3">Berapa ukuran file maksimal yang bisa di-upload?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a3">Maksimal 10MB. Untuk file yang lebih besar, kami sarankan untuk membagi dataset menjadi beberapa bagian.</div>
           </details>
           <details class="faq">
-            <summary>Format file apa saja yang didukung?</summary>
-            <div class="faq-body">Saat ini hanya <strong>CSV</strong> (Comma-Separated Values) dengan header di baris pertama dan pemisah koma. Dukungan Excel (.xlsx) akan ditambahkan.</div>
+            <summary data-i18n="docs_faq_q4">Format file apa saja yang didukung?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a4">Saat ini hanya <strong>CSV</strong> (Comma-Separated Values) dengan header di baris pertama dan pemisah koma. Dukungan Excel (.xlsx) akan ditambahkan.</div>
           </details>
           <details class="faq">
-            <summary>Model mana yang sebaiknya saya gunakan?</summary>
-            <div class="faq-body">Gunakan <strong>CTGAN</strong> jika data Anda kompleks dan memiliki banyak baris (>1000). Gunakan <strong>TVAE</strong> jika dataset Anda lebih kecil (<500 baris) karena arsitektur VAE lebih stabil dalam memetakan ruang laten dataset kecil.</div>
+            <summary data-i18n="docs_faq_q5">Model mana yang sebaiknya saya gunakan?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a5">Gunakan <strong>CTGAN</strong> jika data Anda kompleks dan memiliki banyak baris (&gt;1000). Gunakan <strong>TVAE</strong> jika dataset Anda lebih kecil (&lt;500 baris) karena arsitektur VAE lebih stabil dalam memetakan ruang laten dataset kecil.</div>
           </details>
           <details class="faq">
-            <summary>Apakah hasil sintesis bisa untuk publikasi ilmiah?</summary>
-            <div class="faq-body">Ya, tentu. Pastikan untuk menjelaskan metode augmentasi yang digunakan dalam bagian metodologi paper Anda. Lihat bagian <a href="#citation">Cara Sitasi</a> di bawah.</div>
+            <summary data-i18n="docs_faq_q6">Apakah hasil sintesis bisa untuk publikasi ilmiah?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a6">Ya, tentu. Pastikan untuk menjelaskan metode augmentasi yang digunakan dalam bagian metodologi paper Anda. Lihat bagian <a href="#citation">Cara Sitasi</a> di bawah.</div>
           </details>
           <details class="faq">
-            <summary>Berapa epochs yang disarankan?</summary>
-            <div class="faq-body">Untuk riset medis: <strong>300-500 epochs</strong> biasanya sudah cukup. Gunakan lebih tinggi (600-1000) jika hasil kualitas belum memuaskan, tapi perhatikan waktu training yang semakin lama.</div>
+            <summary data-i18n="docs_faq_q7">Berapa epochs yang disarankan?</summary>
+            <div class="faq-body" data-i18n-html="docs_faq_a7">Untuk riset medis: <strong>300-500 epochs</strong> biasanya sudah cukup. Gunakan lebih tinggi (600-1000) jika hasil kualitas belum memuaskan, tapi perhatikan waktu training yang semakin lama.</div>
           </details>
         </div>
       </div>
@@ -347,14 +351,14 @@
     <!-- SITASI -->
     <section class="doc-section" id="citation">
       <div class="section-head">
-        <span class="sec-badge">Akademik</span>
-        <h2>Cara Sitasi</h2>
+        <span class="sec-badge" data-i18n="docs_sec_academic">Akademik</span>
+        <h2 data-i18n="docs_cite_h2">Cara Sitasi</h2>
       </div>
       <div class="section-body">
-        <p>Jika Anda menggunakan SynthMed dalam penelitian, silakan sitasi:</p>
+        <p data-i18n="docs_cite_p">Jika Anda menggunakan SynthMed dalam penelitian, silakan sitasi:</p>
 
         <div class="cite-box">
-          <div class="cite-label">APA Format</div>
+          <div class="cite-label" data-i18n="docs_cite_apa">APA Format</div>
           <p class="cite-text">SynthMed Team. (2026). <em>SynthMed: Open Platform for Healthcare Dataset Synthesis</em>. Retrieved from https://synthmed.id</p>
         </div>
 
@@ -370,7 +374,7 @@
 
         <div class="callout callout-success">
           <span class="callout-icon">🙏</span>
-          <div><strong>Terima kasih!</strong> Dengan menyitasi SynthMed, Anda membantu kami mengembangkan platform ini untuk lebih banyak peneliti.</div>
+          <div data-i18n-html="docs_cite_thanks_html"><strong>Terima kasih!</strong> Dengan menyitasi SynthMed, Anda membantu kami mengembangkan platform ini untuk lebih banyak peneliti.</div>
         </div>
       </div>
     </section>
@@ -380,39 +384,16 @@
   <!-- FOOTER -->
   <footer class="docs-footer">
     <div class="footer-inner">
-      <p>© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
+      <p data-i18n="footer_tagline">© 2026 SynthMed — Platform Riset Terbuka untuk Sintesis Dataset Kesehatan</p>
       <div class="footer-links">
-        <a href="index.html">Beranda</a>
-        <a href="synthesize.html">Synthesizer</a>
-        <a href="docs.html">Dokumentasi</a>
+        <a href="index.html" data-i18n="nav_home">Beranda</a>
+        <a href="synthesize.html" data-i18n="nav_synth">Synthesizer</a>
+        <a href="docs.html" data-i18n="nav_docs">Dokumentasi</a>
       </div>
     </div>
   </footer>
 
-  <script>
-    // Mobile nav
-    document.getElementById('navToggle').addEventListener('click', function() {
-      this.classList.toggle('active');
-      document.getElementById('navLinks').classList.toggle('active');
-    });
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        const el = document.querySelector(a.getAttribute('href'));
-        if (el) window.scrollTo({ top: el.offsetTop - 70, behavior: 'smooth' });
-      });
-    });
-    // Active TOC on scroll
-    const secs = document.querySelectorAll('.doc-section');
-    const tocLinks = document.querySelectorAll('.toc-link');
-    window.addEventListener('scroll', () => {
-      let cur = '';
-      secs.forEach(s => { if (window.pageYOffset >= s.offsetTop - 100) cur = s.id; });
-      tocLinks.forEach(l => {
-        l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
-      });
-    });
-  </script>
+  <script src="../scripts/i18n.js"></script>
+  <script src="../scripts/docs.js"></script>
 </body>
 </html>
