@@ -70,7 +70,8 @@
         <div class="callout callout-info">
           <span class="callout-icon">💡</span>
           <div>
-            <strong>SynthMed</strong> adalah platform riset terbuka dan <strong>100% gratis</strong> yang membantu peneliti kesehatan untuk mengaugmentasi (memperbanyak) dataset mereka menggunakan metode statistik. Semua proses berjalan di browser — data Anda tidak pernah dikirim ke server manapun.
+            <strong>SynthMed</strong> adalah platform riset terbuka dan <strong>100% gratis</strong> yang membantu peneliti kesehatan untuk mengaugmentasi (memperbanyak) dataset mereka menggunakan metode AI Generative (GAN & TVAE).
+            Data Anda diproses secara transien di server kami untuk proses training AI dan otomatis dihapus secara berkala untuk menjamin privasi.
           </div>
         </div>
         <h3>Mengapa Data Sintesis?</h3>
@@ -91,8 +92,8 @@
           </div>
           <div class="feat-card">
             <div class="feat-icon">🔬</div>
-            <h4>2 Metode Sintesis</h4>
-            <p>Statistical Sampling atau Bootstrap + Noise sesuai kebutuhan.</p>
+            <h4>2 Arsitektur Neural</h4>
+            <p>Pilih antara CTGAN untuk dataset besar atau TVAE untuk dataset kecil/sensitif.</p>
           </div>
           <div class="feat-card">
             <div class="feat-icon">📊</div>
@@ -249,9 +250,9 @@
               <tr><th>Parameter</th><th>Rentang</th><th>Rekomendasi</th><th>Deskripsi</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>Multiplier</strong></td><td>2x – 100x</td><td>5x – 10x</td><td>Berapa kali lipat data output dari data asli</td></tr>
-              <tr><td><strong>Noise Level</strong></td><td>0% – 100%</td><td>10% – 20%</td><td>Tingkat variasi data sintetis dari data asli</td></tr>
-              <tr><td><strong>Kolom</strong></td><td>Pilih kolom</td><td>Semua kolom</td><td>Kolom mana yang ingin diaugmentasi</td></tr>
+              <tr><td><strong>Multiplier</strong></td><td>2x – 100x</td><td>2x – 10x</td><td>Berapa kali lipat data output dari data asli</td></tr>
+              <tr><td><strong>Epochs</strong></td><td>100 – 1000</td><td>300 – 500</td><td>Jumlah iterasi training (semakin tinggi, semakin akurat)</td></tr>
+              <tr><td><strong>Model</strong></td><td>CTGAN / TVAE</td><td>TVAE (small)</td><td>Arsitektur neural yang digunakan sesuai ukuran data</td></tr>
             </tbody>
           </table>
         </div>
@@ -317,7 +318,7 @@
           </details>
           <details class="faq">
             <summary>Apakah data saya aman?</summary>
-            <div class="faq-body">Ya. Semua proses sintesis dilakukan <strong>di browser Anda</strong> (client-side). Data tidak pernah dikirim atau disimpan di server manapun.</div>
+            <div class="faq-body">Ya. Meskipun data dikirim ke server untuk diproses oleh arsitektur AI (karena membutuhkan resource komputasi tinggi), data tersebut diproses secara <strong>stateless & transien</strong>. Data tidak disimpan permanen dan session otomatis dihapus setelah 1 jam.</div>
           </details>
           <details class="faq">
             <summary>Berapa ukuran file maksimal yang bisa di-upload?</summary>
@@ -328,8 +329,8 @@
             <div class="faq-body">Saat ini hanya <strong>CSV</strong> (Comma-Separated Values) dengan header di baris pertama dan pemisah koma. Dukungan Excel (.xlsx) akan ditambahkan.</div>
           </details>
           <details class="faq">
-            <summary>Metode mana yang sebaiknya saya gunakan?</summary>
-            <div class="faq-body">Gunakan <strong>Statistical Sampling</strong> jika data Anda berdistribusi normal dan ingin data yang benar-benar baru. Gunakan <strong>Bootstrap + Noise</strong> jika ingin mempertahankan korelasi antar variabel.</div>
+            <summary>Model mana yang sebaiknya saya gunakan?</summary>
+            <div class="faq-body">Gunakan <strong>CTGAN</strong> jika data Anda kompleks dan memiliki banyak baris (>1000). Gunakan <strong>TVAE</strong> jika dataset Anda lebih kecil (<500 baris) karena arsitektur VAE lebih stabil dalam memetakan ruang laten dataset kecil.</div>
           </details>
           <details class="faq">
             <summary>Apakah hasil sintesis bisa untuk publikasi ilmiah?</summary>

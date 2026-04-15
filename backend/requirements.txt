@@ -1,5 +1,7 @@
 fastapi==0.115.*
 uvicorn[standard]==0.30.*
 sdv==1.17.*
+sdmetrics>=0.14.0
 pandas==2.2.*
+numpy>=1.26.0
 python-multipart==0.0.12

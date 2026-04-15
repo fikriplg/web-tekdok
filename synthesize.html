@@ -47,22 +47,17 @@
       <div class="stepper">
         <div class="step active" data-step="1">
           <div class="step-dot">1</div>
-          <span>Upload</span>
+          <span>Dataset</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="2">
           <div class="step-dot">2</div>
-          <span>Konfigurasi</span>
+          <span>Sintesis</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="3">
           <div class="step-dot">3</div>
-          <span>Generate</span>
-        </div>
-        <div class="step-line"></div>
-        <div class="step" data-step="4">
-          <div class="step-dot">4</div>
-          <span>Download</span>
+          <span>Hasil</span>
         </div>
       </div>
 
@@ -103,6 +98,15 @@
               <table id="previewTable"></table>
             </div>
             <div class="data-summary" id="dataSummary"></div>
+          </div>
+
+          <!-- Column Selector (Moved to Step 1) -->
+          <div class="config-item full-width hidden" id="colSelectionStep1" style="margin-top:24px; background:rgba(13,148,136,0.04); border-radius:12px; border:1px solid rgba(13,148,136,0.1); padding:20px;">
+            <label class="config-label" style="margin-bottom:4px;">🎯 Pilih Kolom Target</label>
+            <p class="config-help" style="margin-bottom:12px;">Pilih kolom-kolom yang ingin Anda sertakan dalam proses sintesis AI.</p>
+            <div class="column-list" id="columnList">
+              <!-- Injected by JS -->
+            </div>
           </div>
 
           <div class="step-actions">
@@ -163,74 +167,64 @@
                 <span>Akurat (1000)</span>
               </div>
             </div>
-
-            <!-- Column Selector -->
-            <div class="config-item full-width">
-              <label class="config-label">Pilih Kolom Target</label>
-              <p class="config-help">Hanya kolom terpilih yang akan diproses oleh AI</p>
-              <div class="column-list" id="columnList">
-                <!-- Injected by JS -->
-              </div>
-            </div>
           </div>
 
           <div class="step-actions">
             <button class="btn-secondary" id="back2">Kembali</button>
-            <button class="btn-primary" id="next2">Mulai Generate ⚡</button>
+            <button class="btn-primary" id="next2">Mulai Sintesis ⚡</button>
           </div>
+
+          <!-- Progress Section (appears inline after clicking Start) -->
+          <div id="generationSection" class="hidden" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(13,148,136,0.15);">
+            <h3 style="font-size: 1.1rem; margin-bottom: 8px;">🔬 Proses Sintesis AI</h3>
+            <p class="card-desc" style="margin-bottom: 16px;">Model sedang menganalisis pola dan menghasilkan data sintetis...</p>
+
+            <div class="generation-progress">
+              <div class="gen-step active" id="genStep1">
+                <div class="gen-icon">📊</div>
+                <div class="gen-info">
+                  <div class="gen-label">Menganalisis distribusi kolom...</div>
+                  <div class="gen-bar"><div class="gen-fill" id="genFill1"></div></div>
+                </div>
+                <span class="gen-status" id="genStatus1">⏳</span>
+              </div>
+              <div class="gen-step" id="genStep2">
+                <div class="gen-icon">🧮</div>
+                <div class="gen-info">
+                  <div class="gen-label">Menghitung parameter statistik...</div>
+                  <div class="gen-bar"><div class="gen-fill" id="genFill2"></div></div>
+                </div>
+                <span class="gen-status" id="genStatus2">⏳</span>
+              </div>
+              <div class="gen-step" id="genStep3">
+                <div class="gen-icon">🧬</div>
+                <div class="gen-info">
+                  <div class="gen-label">Men-generate data sintetis...</div>
+                  <div class="gen-bar"><div class="gen-fill" id="genFill3"></div></div>
+                </div>
+                <span class="gen-status" id="genStatus3">⏳</span>
+              </div>
+              <div class="gen-step" id="genStep4">
+                <div class="gen-icon">✅</div>
+                <div class="gen-info">
+                  <div class="gen-label">Validasi kualitas & konsistensi...</div>
+                  <div class="gen-bar"><div class="gen-fill" id="genFill4"></div></div>
+                </div>
+                <span class="gen-status" id="genStatus4">⏳</span>
+              </div>
+            </div>
+
+            <div class="gen-overall">
+              <div class="gen-overall-bar"><div class="gen-overall-fill" id="genOverallFill"></div></div>
+              <div class="gen-overall-text" id="genOverallText">0% selesai</div>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      <!-- ===== STEP 3: GENERATING ===== -->
+      <!-- ===== STEP 3: RESULTS ===== -->
       <section class="tool-step hidden" id="step3">
-        <div class="card">
-          <h2 class="card-title">🔬 Proses Sintesis</h2>
-          <p class="card-desc">AI sedang menganalisis pola dan menghasilkan data sintetis...</p>
-
-          <div class="generation-progress">
-            <div class="gen-step active" id="genStep1">
-              <div class="gen-icon">📊</div>
-              <div class="gen-info">
-                <div class="gen-label">Menganalisis distribusi kolom...</div>
-                <div class="gen-bar"><div class="gen-fill" id="genFill1"></div></div>
-              </div>
-              <span class="gen-status" id="genStatus1">⏳</span>
-            </div>
-            <div class="gen-step" id="genStep2">
-              <div class="gen-icon">🧮</div>
-              <div class="gen-info">
-                <div class="gen-label">Menghitung parameter statistik...</div>
-                <div class="gen-bar"><div class="gen-fill" id="genFill2"></div></div>
-              </div>
-              <span class="gen-status" id="genStatus2">⏳</span>
-            </div>
-            <div class="gen-step" id="genStep3">
-              <div class="gen-icon">🧬</div>
-              <div class="gen-info">
-                <div class="gen-label">Men-generate data sintetis...</div>
-                <div class="gen-bar"><div class="gen-fill" id="genFill3"></div></div>
-              </div>
-              <span class="gen-status" id="genStatus3">⏳</span>
-            </div>
-            <div class="gen-step" id="genStep4">
-              <div class="gen-icon">✅</div>
-              <div class="gen-info">
-                <div class="gen-label">Validasi kualitas & konsistensi...</div>
-                <div class="gen-bar"><div class="gen-fill" id="genFill4"></div></div>
-              </div>
-              <span class="gen-status" id="genStatus4">⏳</span>
-            </div>
-          </div>
-
-          <div class="gen-overall">
-            <div class="gen-overall-bar"><div class="gen-overall-fill" id="genOverallFill"></div></div>
-            <div class="gen-overall-text" id="genOverallText">0% selesai</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== STEP 4: RESULTS ===== -->
-      <section class="tool-step hidden" id="step4">
         <div class="card">
           <h2 class="card-title">✅ Sintesis Selesai!</h2>
           <p class="card-desc">Dataset sintetis berhasil dihasilkan. Berikut hasil dan statistik kualitasnya.</p>

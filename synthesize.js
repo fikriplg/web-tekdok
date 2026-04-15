@@ -1,17 +1,31 @@
 // ===== SYNTHMED SYNTHESIZER - AI NEURAL CORE =====
 
+// Configurable API Base
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:8000' 
+  : ''; // Relative URL for production if hosted on same domain, otherwise put server URL
+
 let originalData = [];
 let originalHeaders = [];
 let syntheticData = [];
 let selectedColumns = [];
 let multiplier = 2;
 let colStats = [];
+let sessionId = ""; // Track server session
 
 document.addEventListener('DOMContentLoaded', () => {
   initUpload();
   initConfig();
   initNavToggle();
   initTabs();
+  
+  // Single listener for download to avoid duplicates
+  const downloadBtn = document.getElementById('btnDownload');
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      downloadCSV();
+    });
+  }
 });
 
 // ===== NAVIGATION =====
@@ -154,6 +168,12 @@ function parseCSV(text) {
 
   showPreview();
   selectedColumns = [...originalHeaders];
+  
+  // New Step 1 behavior: show column chips immediately
+  buildColumnChips();
+  const colSec = document.getElementById('colSelectionStep1');
+  if (colSec) colSec.classList.remove('hidden');
+  
   document.getElementById('btnNext1').classList.remove('disabled');
   document.getElementById('btnNext1').disabled = false;
 }
@@ -233,12 +253,10 @@ function initConfig() {
   if (back2) back2.addEventListener('click', () => goToStep(1));
   if (next2) {
     next2.addEventListener('click', () => {
-      selectedColumns = [];
-      document.querySelectorAll('.col-chip.selected').forEach(chip => {
-        selectedColumns.push(chip.dataset.col);
-      });
-      if (selectedColumns.length === 0) { alert('Pilih minimal 1 kolom!'); return; }
-      goToStep(3);
+      // Step 2 Action: Start Synthesis
+      document.getElementById('generationSection').classList.remove('hidden');
+      next2.disabled = true;
+      next2.classList.add('disabled');
       startGeneration();
     });
   }
@@ -270,15 +288,23 @@ function buildColumnChips() {
 let progressTimer = null;
 
 async function startGeneration() {
+  selectedColumns = [];
+  document.querySelectorAll('.col-chip.selected').forEach(chip => {
+    selectedColumns.push(chip.dataset.col);
+  });
+  
   const totalTarget = originalData.length * multiplier;
 
   resetGenerationUI();
   document.getElementById('genStep1').classList.add('active');
 
   const formData = new FormData();
-  let csvContent = originalHeaders.join(',') + '\n' + 
-      originalData.map(row => row.map(v => `"${v}"`).join(',')).join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv' });
+  // Filter columns before sending if user deselected some
+  const colIndices = selectedColumns.map(name => originalHeaders.indexOf(name));
+  let headerRow = selectedColumns.join(',');
+  let dataRows = originalData.map(row => colIndices.map(idx => `"${row[idx]}"`).join(',')).join('\n');
+  
+  const blob = new Blob([headerRow + '\n' + dataRows], { type: 'text/csv' });
     
   const epochs = document.getElementById('epochSlider').value;
   const modelType = document.querySelector('input[name="ganModel"]:checked').value;
@@ -288,7 +314,7 @@ async function startGeneration() {
   formData.append('model_type', modelType);
 
   try {
-    const response = await fetch('http://localhost:8000/train-gan', {
+    const response = await fetch(`${API_BASE}/train-gan`, {
       method: 'POST',
       body: formData
     });
@@ -313,7 +339,10 @@ async function startGeneration() {
         try {
           const msg = JSON.parse(line);
           handleStreamMessage(msg);
-          if (msg.type === 'complete') trainingDone = true;
+          if (msg.type === 'complete') {
+            trainingDone = true;
+            sessionId = msg.session_id; // Store session ID for subsequent calls
+          }
           if (msg.type === 'error') {
             stopProgressSimulation();
             alert('❌ Error backend: ' + msg.message);
@@ -339,8 +368,17 @@ async function startGeneration() {
   } catch (e) {
     stopProgressSimulation();
     console.error('Generation error:', e);
-    alert('❌ Gagal menghubungi backend AI!\nPastikan server Python berjalan:\nuvicorn app:app --reload --port 8000');
+    alert(`❌ Gagal menghubungi backend AI!\nPastikan server Python berjalan di ${API_BASE}`);
     goToStep(2);
+    resetGenButton();
+  }
+}
+
+function resetGenButton() {
+  const next2 = document.getElementById('next2');
+  if (next2) {
+    next2.disabled = false;
+    next2.classList.remove('disabled');
   }
 }
 
@@ -435,11 +473,17 @@ function stopProgressSimulation() {
 
 async function fetchSynthesis(totalTarget) {
   try {
-    const genRes = await axios.post('http://localhost:8000/synthesize-gan',
-      new URLSearchParams({ num_rows: totalTarget.toString() })
+    const genRes = await axios.post(`${API_BASE}/synthesize-gan`,
+      new URLSearchParams({ 
+        num_rows: totalTarget.toString(),
+        session_id: sessionId
+      })
     );
+    // Since we filtered columns before sending, originalHeaders is no longer matching if some were removed
+    // We should use the headers returned from backend or the current selectedColumns
+    let currentHeaders = selectedColumns;
     syntheticData = genRes.data.synthetic_data.map(row => {
-      return originalHeaders.map(h => row[h]);
+      return currentHeaders.map(h => row[h]);
     });
     
     updateStepUI(4, 100, 'Data sintetis berhasil dihasilkan!');
@@ -448,11 +492,12 @@ async function fetchSynthesis(totalTarget) {
     document.getElementById('genOverallFill').style.width = '100%';
     document.getElementById('genOverallText').textContent = '100% Selesai! 🎉';
     
-    setTimeout(() => { goToStep(4); showResults(); }, 1000);
+    setTimeout(() => { goToStep(3); showResults(); }, 1000);
   } catch (e) {
     console.error('Synthesis error:', e);
     alert('❌ Gagal men-generate data sintetis dari model.\nError: ' + (e.response?.data?.detail || e.message));
     goToStep(2);
+    resetGenButton();
   }
 }
 
@@ -464,13 +509,13 @@ function updateStepUI(stepNum, percent, label) {
   if (labelEl && label) labelEl.textContent = label;
 }
 
-// ===== STEP 4: RESULTS =====
+// ===== STEP 3: RESULTS =====
 function showResults() {
   document.getElementById('totalRows').textContent = syntheticData.length.toLocaleString('id-ID');
 
   const table = document.getElementById('resultTable');
   let html = '<thead><tr>';
-  originalHeaders.forEach(h => html += `<th>${escapeHtml(h)}</th>`);
+  selectedColumns.forEach(h => html += `<th>${escapeHtml(h)}</th>`);
   html += '</tr></thead><tbody>';
   syntheticData.slice(0, 10).forEach(row => {
     html += '<tr>';
@@ -480,17 +525,23 @@ function showResults() {
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Show loading state, then fetch real quality metrics from backend
   buildQualityReport();
   buildComparison();
 
-  document.getElementById('btnDownload').addEventListener('click', downloadCSV);
-  document.getElementById('btnNewSynthesis').addEventListener('click', () => {
-    resetUpload();
-    syntheticData = [];
-    goToStep(1);
-    resetGenerationUI();
-  });
+  const resetBtn = document.getElementById('btnNewSynthesis');
+  if (resetBtn) {
+    // Only one listener via init approach but for this one we specifically reset state
+    resetBtn.onclick = () => {
+      resetUpload();
+      syntheticData = [];
+      sessionId = "";
+      goToStep(1);
+      resetGenerationUI();
+      resetGenButton();
+      document.getElementById('colSelectionStep1').classList.add('hidden');
+      document.getElementById('generationSection').classList.add('hidden');
+    };
+  }
 }
 
 async function buildQualityReport() {
@@ -506,8 +557,11 @@ async function buildQualityReport() {
 
   try {
     // Call backend SDMetrics evaluation
-    const evalRes = await axios.post('http://localhost:8000/evaluate',
-      new URLSearchParams({ num_rows: originalData.length.toString() })
+    const evalRes = await axios.post(`${API_BASE}/evaluate`,
+      new URLSearchParams({ 
+        num_rows: originalData.length.toString(),
+        session_id: sessionId
+      })
     );
     
     const data = evalRes.data;
@@ -613,8 +667,8 @@ function buildComparison() {
   colStats = analyzeColumns();
   let html = '';
 
-  originalHeaders.forEach((header, colIdx) => {
-    if (!selectedColumns.includes(header)) return;
+  selectedColumns.forEach((header) => {
+    const colIdx = originalHeaders.indexOf(header);
     const stats = colStats[colIdx];
 
     if (stats.isNumeric) {
@@ -664,15 +718,25 @@ function isNumericColumn(colIdx) {
 
 // ===== UTILS =====
 function goToStep(stepNum) {
+  const totalSteps = 3;
   document.querySelectorAll('.tool-step').forEach(s => s.classList.add('hidden'));
-  document.getElementById(`step${stepNum}`).classList.remove('hidden');
+  
+  const target = document.getElementById(`step${stepNum}`);
+  if (target) target.classList.remove('hidden');
+
   document.querySelectorAll('.stepper .step').forEach((s, i) => {
     s.classList.remove('active', 'done');
     if (i + 1 < stepNum) s.classList.add('done');
     if (i + 1 === stepNum) s.classList.add('active');
   });
-  document.querySelectorAll('.step-line').forEach((l, i) => l.classList.toggle('done', i + 1 < stepNum));
-  if (stepNum === 2) buildColumnChips();
+  document.querySelectorAll('.step-line').forEach((l, i) => {
+    if (i < totalSteps - 1) {
+      l.classList.toggle('done', i + 1 < stepNum);
+    }
+  });
+  
+  // Scroll to top of the step
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function resetGenerationUI() {
@@ -713,7 +777,7 @@ function initTabs() {
 
 function downloadCSV() {
   if (syntheticData.length === 0) return;
-  let csv = originalHeaders.join(',') + '\n';
+  let csv = selectedColumns.join(',') + '\n';
   syntheticData.forEach(row => {
     csv += row.map(val => {
       const s = String(val);

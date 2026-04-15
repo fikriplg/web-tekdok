@@ -15,6 +15,7 @@ import json
 import asyncio
 import threading
 import queue
+import uuid
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -22,20 +23,35 @@ logger = logging.getLogger("SynthMedAPI")
 
 app = FastAPI(title="SynthMed GAN API v3.0 — Optimized")
 
+# =============================================
+# CORS: Configurable allowed origins
+# In production, replace "*" with your actual frontend domain(s)
+# e.g. ["https://synthmed.id", "https://www.synthmed.id"]
+# =============================================
+ALLOWED_ORIGINS = [
+    "http://localhost:5500",
+    "http://localhost:5501",
+    "http://127.0.0.1:5500",
+    "http://127.0.0.1:5501",
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "*",  # Remove this line in production
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # =============================================
-# Global State
+# Session-based State (Multi-user safe)
+# Each user gets a unique session_id to isolate their model
 # =============================================
-synthesizer = None
-training_df = None       # Keep original dataframe for evaluation
-training_metadata = None # Keep metadata for evaluation
+sessions = {}  # { session_id: { synthesizer, training_df, training_metadata, created_at } }
+SESSION_TTL_SECONDS = 3600  # Sessions expire after 1 hour
 
 # =============================================
 # Mathematical Foundation:
@@ -52,6 +68,17 @@ training_metadata = None # Keep metadata for evaluation
 #   TVComplement = 1 - 0.5 * Σ|p_i - q_i|
 #   CorrelationSimilarity = 1 - |r_real - r_synth|
 # =============================================
+
+
+def cleanup_expired_sessions():
+    """Remove expired sessions to prevent memory leaks."""
+    now = time.time()
+    expired = [sid for sid, data in sessions.items() 
+               if now - data.get("created_at", 0) > SESSION_TTL_SECONDS]
+    for sid in expired:
+        del sessions[sid]
+        logger.info(f"Session {sid[:8]}... expired and cleaned up")
+
 
 def get_optimized_params(model_type: str, n_rows: int, n_cols: int, epochs: int):
     """
@@ -289,13 +316,36 @@ def compute_quality_metrics(real_df: pd.DataFrame, synthetic_df: pd.DataFrame, m
     return results
 
 
+def validate_csv_file(file: UploadFile):
+    """Validate uploaded file is a proper CSV."""
+    if file.filename and not file.filename.lower().endswith('.csv'):
+        raise HTTPException(
+            status_code=400, 
+            detail="File harus berformat CSV (.csv)"
+        )
+    
+    if file.content_type and file.content_type not in [
+        "text/csv", 
+        "application/csv",
+        "application/vnd.ms-excel",
+        "application/octet-stream",
+        "text/plain",
+    ]:
+        logger.warning(f"Unexpected content type: {file.content_type}, proceeding anyway")
+
+
 # =============================================
 # API Endpoints
 # =============================================
 
 @app.get("/")
 async def health_check():
-    return {"status": "online", "service": "SynthMed GAN Backend v3.0 — Optimized"}
+    cleanup_expired_sessions()
+    return {
+        "status": "online", 
+        "service": "SynthMed GAN Backend v3.0 — Optimized",
+        "active_sessions": len(sessions),
+    }
 
 @app.post("/train-gan")
 async def train_gan(
@@ -303,13 +353,21 @@ async def train_gan(
     epochs: int = Form(300),
     model_type: str = Form("ctgan")
 ):
+    # Validate file
+    validate_csv_file(file)
+    
+    # Cleanup old sessions periodically
+    cleanup_expired_sessions()
+    
+    # Create a new session
+    session_id = str(uuid.uuid4())
+    
     msg_queue = queue.Queue()
 
     def run_training():
-        global synthesizer, training_df, training_metadata
         try:
             # Step 1: Read & Preprocess CSV
-            msg_queue.put({"type": "status", "step": 1, "message": "Membaca file CSV..."})
+            msg_queue.put({"type": "status", "step": 1, "message": "Membaca file CSV...", "session_id": session_id})
             content = file.file.read()
             df = pd.read_csv(io.BytesIO(content))
             
@@ -326,10 +384,6 @@ async def train_gan(
             msg_queue.put({"type": "status", "step": 2, "message": "Menganalisis metadata & distribusi kolom..."})
             metadata = SingleTableMetadata()
             metadata.detect_from_dataframe(df)
-            
-            # Store for evaluation later
-            training_df = df.copy()
-            training_metadata = metadata
             
             msg_queue.put({"type": "status", "step": 2, "message": f"Metadata OK: {n_cols} kolom terdeteksi"})
             time.sleep(0.2)
@@ -348,9 +402,9 @@ async def train_gan(
             })
             
             if model_type.lower() == "tvae":
-                synthesizer = TVAESynthesizer(metadata, **params)
+                synth = TVAESynthesizer(metadata, **params)
             else:
-                synthesizer = CTGANSynthesizer(metadata, **params)
+                synth = CTGANSynthesizer(metadata, **params)
             
             # Signal training start
             msg_queue.put({
@@ -362,16 +416,25 @@ async def train_gan(
             })
             
             start_time = time.time()
-            synthesizer.fit(df)
+            synth.fit(df)
             elapsed = round(time.time() - start_time, 1)
             
             logger.info(f"Training completed in {elapsed}s with params: {params}")
+            
+            # Store in session (not global)
+            sessions[session_id] = {
+                "synthesizer": synth,
+                "training_df": df.copy(),
+                "training_metadata": metadata,
+                "created_at": time.time(),
+            }
             
             msg_queue.put({
                 "type": "complete", 
                 "message": f"Training selesai dalam {elapsed} detik!",
                 "elapsed": elapsed,
-                "rows": n_rows
+                "rows": n_rows,
+                "session_id": session_id,
             })
             
         except Exception as e:
@@ -406,21 +469,28 @@ async def train_gan(
 
 
 @app.post("/synthesize-gan")
-async def synthesize_gan(num_rows: int = Form(1000)):
-    global synthesizer
-    if synthesizer is None:
-        raise HTTPException(status_code=400, detail="Synthesizer belum dilatih!")
+async def synthesize_gan(
+    num_rows: int = Form(1000),
+    session_id: str = Form("")
+):
+    # Find session
+    session = sessions.get(session_id)
+    if not session or session.get("synthesizer") is None:
+        raise HTTPException(status_code=400, detail="Synthesizer belum dilatih atau session tidak ditemukan!")
+    
+    synth = session["synthesizer"]
     
     try:
-        logger.info(f"Generating {num_rows} synthetic rows...")
-        synthetic_df = synthesizer.sample(num_rows=num_rows)
+        logger.info(f"[{session_id[:8]}] Generating {num_rows} synthetic rows...")
+        synthetic_df = synth.sample(num_rows=num_rows)
         data = synthetic_df.to_dict(orient="records")
-        logger.info(f"Successfully generated {len(data)} rows")
+        logger.info(f"[{session_id[:8]}] Successfully generated {len(data)} rows")
         return {
             "synthetic_data": data,
             "total_rows": len(data),
-            "method": str(type(synthesizer).__name__),
-            "quality": "high"
+            "method": str(type(synth).__name__),
+            "quality": "high",
+            "session_id": session_id,
         }
     except Exception as e:
         logger.error(f"Synthesis error: {str(e)}")
@@ -430,7 +500,10 @@ async def synthesize_gan(num_rows: int = Form(1000)):
 
 
 @app.post("/evaluate")
-async def evaluate_quality(num_rows: int = Form(0)):
+async def evaluate_quality(
+    num_rows: int = Form(0),
+    session_id: str = Form("")
+):
     """
     Evaluate synthetic data quality using SDMetrics.
     
@@ -441,22 +514,25 @@ async def evaluate_quality(num_rows: int = Form(0)):
     
     Returns overall quality score and per-column breakdown.
     """
-    global synthesizer, training_df, training_metadata
+    session = sessions.get(session_id)
+    if not session or session.get("synthesizer") is None:
+        raise HTTPException(status_code=400, detail="Model belum dilatih atau session tidak ditemukan!")
     
-    if synthesizer is None or training_df is None:
-        raise HTTPException(status_code=400, detail="Model belum dilatih!")
+    synth = session["synthesizer"]
+    training_df = session["training_df"]
+    training_metadata = session["training_metadata"]
     
     try:
         # Generate synthetic data for evaluation
         eval_rows = num_rows if num_rows > 0 else len(training_df)
-        logger.info(f"Evaluating quality with {eval_rows} synthetic rows...")
+        logger.info(f"[{session_id[:8]}] Evaluating quality with {eval_rows} synthetic rows...")
         
-        synthetic_df = synthesizer.sample(num_rows=eval_rows)
+        synthetic_df = synth.sample(num_rows=eval_rows)
         
         # Compute SDMetrics quality scores
         metrics = compute_quality_metrics(training_df, synthetic_df, training_metadata)
         
-        logger.info(f"Quality evaluation complete: {metrics['overall_score']}% overall")
+        logger.info(f"[{session_id[:8]}] Quality evaluation complete: {metrics['overall_score']}% overall")
         
         return {
             "overall_score": metrics["overall_score"],
@@ -465,7 +541,8 @@ async def evaluate_quality(num_rows: int = Form(0)):
             "column_details": metrics["column_details"],
             "pair_details": metrics["pair_details"],
             "eval_rows": eval_rows,
-            "method": str(type(synthesizer).__name__),
+            "method": str(type(synth).__name__),
+            "session_id": session_id,
         }
     except Exception as e:
         logger.error(f"Evaluation error: {str(e)}")
