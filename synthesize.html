@@ -123,6 +123,18 @@
             <p class="card-desc">Atur parameter model AI untuk menghasilkan dataset sintetis terbaik.</p>
           </div>
 
+          <!-- Inline notice (errors/retry) -->
+          <div id="processNotice" class="notice notice-error hidden" role="alert" aria-live="polite">
+            <div class="notice-body">
+              <div class="notice-title" id="processNoticeTitle">Terjadi kendala</div>
+              <div class="notice-text" id="processNoticeText">-</div>
+            </div>
+            <div class="notice-actions">
+              <button class="btn-upload" id="processNoticeRetry" type="button">Coba lagi</button>
+              <button class="btn-icon" id="processNoticeClose" type="button" aria-label="Tutup">✕</button>
+            </div>
+          </div>
+
           <div class="config-grid">
             <!-- Multiplier -->
             <div class="config-item">
@@ -174,10 +186,40 @@
             <button class="btn-primary" id="next2">Mulai Sintesis ⚡</button>
           </div>
 
-          <!-- Progress Section (appears inline after clicking Start) -->
-          <div id="generationSection" class="hidden" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(13,148,136,0.15);">
+          <!-- Progress Section (appears after clicking Start) -->
+          <div id="generationSection" class="generation-section hidden" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(13,148,136,0.15);">
             <h3 style="font-size: 1.1rem; margin-bottom: 8px;">🔬 Proses Sintesis AI</h3>
             <p class="card-desc" style="margin-bottom: 16px;">Model sedang menganalisis pola dan menghasilkan data sintetis...</p>
+
+            <div class="run-summary" id="runSummary">
+              <div class="run-summary-grid">
+                <div class="run-summary-item">
+                  <div class="run-summary-label">Dataset</div>
+                  <div class="run-summary-value" id="runDataset">-</div>
+                </div>
+                <div class="run-summary-item">
+                  <div class="run-summary-label">Kolom</div>
+                  <div class="run-summary-value" id="runColumns">-</div>
+                </div>
+                <div class="run-summary-item">
+                  <div class="run-summary-label">Model</div>
+                  <div class="run-summary-value" id="runModel">-</div>
+                </div>
+                <div class="run-summary-item">
+                  <div class="run-summary-label">Epochs</div>
+                  <div class="run-summary-value" id="runEpochs">-</div>
+                </div>
+                <div class="run-summary-item">
+                  <div class="run-summary-label">Target Output</div>
+                  <div class="run-summary-value" id="runTarget">-</div>
+                </div>
+                <div class="run-summary-item">
+                  <div class="run-summary-label">Session</div>
+                  <div class="run-summary-value" id="runSession">-</div>
+                </div>
+              </div>
+              <div class="run-summary-hint">Tips: selama proses berjalan, jangan refresh/menutup tab agar progress tidak terputus.</div>
+            </div>
 
             <div class="generation-progress">
               <div class="gen-step active" id="genStep1">

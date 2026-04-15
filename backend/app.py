@@ -1,11 +1,14 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from sdv.single_table import CTGANSynthesizer, TVAESynthesizer
 from sdv.metadata import SingleTableMetadata
 from sdmetrics.reports.single_table import QualityReport
 from sdmetrics.single_column import KSComplement, TVComplement
 from sdmetrics.column_pairs import CorrelationSimilarity
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import pandas as pd
 import numpy as np
 import io
@@ -16,6 +19,7 @@ import asyncio
 import threading
 import queue
 import uuid
+import os
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -24,19 +28,45 @@ logger = logging.getLogger("SynthMedAPI")
 app = FastAPI(title="SynthMed GAN API v3.0 — Optimized")
 
 # =============================================
+# Rate Limiting: Prevent spam/DoS attacks
+# =============================================
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+# Add exception handler for rate limit exceeded
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": "Rate limit exceeded. Please try again later.",
+            "detail": str(exc),
+        },
+    )
+
+# =============================================
 # CORS: Configurable allowed origins
 # In production, replace "*" with your actual frontend domain(s)
 # e.g. ["https://synthmed.id", "https://www.synthmed.id"]
 # =============================================
-ALLOWED_ORIGINS = [
-    "http://localhost:5500",
-    "http://localhost:5501",
-    "http://127.0.0.1:5500",
-    "http://127.0.0.1:5501",
-    "http://localhost:3000",
-    "http://localhost:8080",
-    "*",  # Remove this line in production
-]
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")  # Set to "production" when deploying
+
+if ENVIRONMENT == "production":
+    ALLOWED_ORIGINS = [
+        "https://synthmed.id",
+        "https://www.synthmed.id",
+        # Add your production frontend URL here
+    ]
+else:
+    ALLOWED_ORIGINS = [
+        "http://localhost:5500",
+        "http://localhost:5501",
+        "http://127.0.0.1:5500",
+        "http://127.0.0.1:5501",
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "http://localhost:8000",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -348,10 +378,12 @@ async def health_check():
     }
 
 @app.post("/train-gan")
+@limiter.limit("5/hour")
 async def train_gan(
+    request: Request,
     file: UploadFile = File(...), 
     epochs: int = Form(300),
-    model_type: str = Form("ctgan")
+    model_type: str = Form("ctgan"),
 ):
     # Validate file
     validate_csv_file(file)
@@ -469,9 +501,11 @@ async def train_gan(
 
 
 @app.post("/synthesize-gan")
+@limiter.limit("10/hour")
 async def synthesize_gan(
+    request: Request,
     num_rows: int = Form(1000),
-    session_id: str = Form("")
+    session_id: str = Form(""),
 ):
     # Find session
     session = sessions.get(session_id)

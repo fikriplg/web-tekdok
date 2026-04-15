@@ -12,10 +12,13 @@ let selectedColumns = [];
 let multiplier = 2;
 let colStats = [];
 let sessionId = ""; // Track server session
+let processNoticeRetryFn = null;
+let lastRunSummary = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   initUpload();
   initConfig();
+  initProcessNotice();
   initNavToggle();
   initTabs();
   
@@ -27,6 +30,108 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+function initProcessNotice() {
+  const closeBtn = document.getElementById('processNoticeClose');
+  const retryBtn = document.getElementById('processNoticeRetry');
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      hideProcessNotice();
+      restoreStep2ConfigView();
+    });
+  }
+  if (retryBtn) {
+    retryBtn.addEventListener('click', () => {
+      if (typeof processNoticeRetryFn === 'function') {
+        const fn = processNoticeRetryFn;
+        processNoticeRetryFn = null;
+        hideProcessNotice();
+        fn();
+        return;
+      }
+      hideProcessNotice();
+    });
+  }
+}
+
+function showProcessNotice(title, message, retryFn) {
+  const notice = document.getElementById('processNotice');
+  if (!notice) return;
+
+  const titleEl = document.getElementById('processNoticeTitle');
+  const textEl = document.getElementById('processNoticeText');
+
+  if (titleEl) titleEl.textContent = title || 'Terjadi kendala';
+  if (textEl) textEl.textContent = message || '';
+
+  processNoticeRetryFn = typeof retryFn === 'function' ? retryFn : null;
+  notice.classList.remove('hidden');
+}
+
+function hideProcessNotice() {
+  const notice = document.getElementById('processNotice');
+  if (!notice) return;
+  notice.classList.add('hidden');
+  processNoticeRetryFn = null;
+}
+
+function setRunningMode(isRunning) {
+  document.body.classList.toggle('is-running', !!isRunning);
+
+  const cfgGrid = document.querySelector('#step2 .config-grid');
+  const actions = document.querySelector('#step2 .step-actions');
+  const genSection = document.getElementById('generationSection');
+
+  if (isRunning) {
+    if (cfgGrid) cfgGrid.classList.add('hidden');
+    if (actions) actions.classList.add('hidden');
+    if (genSection) genSection.classList.remove('hidden');
+  } else {
+    if (cfgGrid) cfgGrid.classList.remove('hidden');
+    if (actions) actions.classList.remove('hidden');
+  }
+}
+
+function formatColumnsSummary(cols) {
+  if (!Array.isArray(cols) || cols.length === 0) return '-';
+  if (cols.length <= 4) return cols.join(', ');
+  return `${cols.length} kolom · ${cols.slice(0, 3).join(', ')} …`;
+}
+
+function updateRunSummaryUI(partial) {
+  if (partial) lastRunSummary = { ...(lastRunSummary || {}), ...partial };
+
+  const datasetName = lastRunSummary?.datasetName || '-';
+  const columns = lastRunSummary?.columns || [];
+  const modelType = lastRunSummary?.modelType || '-';
+  const epochs = lastRunSummary?.epochs || '-';
+  const totalTarget = lastRunSummary?.totalTarget;
+
+  const datasetEl = document.getElementById('runDataset');
+  const columnsEl = document.getElementById('runColumns');
+  const modelEl = document.getElementById('runModel');
+  const epochsEl = document.getElementById('runEpochs');
+  const targetEl = document.getElementById('runTarget');
+  const sessionEl = document.getElementById('runSession');
+
+  if (datasetEl) datasetEl.textContent = datasetName;
+  if (columnsEl) columnsEl.textContent = formatColumnsSummary(columns);
+  if (modelEl) modelEl.textContent = String(modelType).toUpperCase();
+  if (epochsEl) epochsEl.textContent = String(epochs);
+  if (targetEl) {
+    const n = Number(totalTarget);
+    targetEl.textContent = Number.isFinite(n) ? `${n.toLocaleString('id-ID')} baris` : '-';
+  }
+  if (sessionEl) sessionEl.textContent = sessionId ? sessionId : '-';
+}
+
+function restoreStep2ConfigView() {
+  setRunningMode(false);
+  const genSection = document.getElementById('generationSection');
+  if (genSection) genSection.classList.add('hidden');
+  resetGenButton();
+}
 
 // ===== NAVIGATION =====
 function initNavToggle() {
@@ -253,8 +358,7 @@ function initConfig() {
   if (back2) back2.addEventListener('click', () => goToStep(1));
   if (next2) {
     next2.addEventListener('click', () => {
-      // Step 2 Action: Start Synthesis
-      document.getElementById('generationSection').classList.remove('hidden');
+      hideProcessNotice();
       next2.disabled = true;
       next2.classList.add('disabled');
       startGeneration();
@@ -286,14 +390,49 @@ function buildColumnChips() {
 
 // ===== STEP 3: GENERATION =====
 let progressTimer = null;
+let trainingStartedAt = null;
 
 async function startGeneration() {
+  hideProcessNotice();
+  sessionId = "";
+  updateRunSummaryUI({ sessionId: '-' });
+
+  const next2 = document.getElementById('next2');
+  if (next2) {
+    next2.disabled = true;
+    next2.classList.add('disabled');
+  }
+
   selectedColumns = [];
   document.querySelectorAll('.col-chip.selected').forEach(chip => {
     selectedColumns.push(chip.dataset.col);
   });
+
+  if (selectedColumns.length === 0) {
+    showProcessNotice(
+      'Konfigurasi belum lengkap',
+      'Pilih minimal 1 kolom target untuk disintesis.',
+      () => startGeneration()
+    );
+    resetGenButton();
+    return;
+  }
   
   const totalTarget = originalData.length * multiplier;
+
+  const epochs = document.getElementById('epochSlider').value;
+  const modelType = document.querySelector('input[name="ganModel"]:checked').value;
+  const datasetName = (document.getElementById('fileName')?.textContent || '').trim() || 'dataset.csv';
+
+  updateRunSummaryUI({
+    datasetName,
+    columns: [...selectedColumns],
+    modelType,
+    epochs,
+    totalTarget
+  });
+
+  setRunningMode(true);
 
   resetGenerationUI();
   document.getElementById('genStep1').classList.add('active');
@@ -305,10 +444,7 @@ async function startGeneration() {
   let dataRows = originalData.map(row => colIndices.map(idx => `"${row[idx]}"`).join(',')).join('\n');
   
   const blob = new Blob([headerRow + '\n' + dataRows], { type: 'text/csv' });
-    
-  const epochs = document.getElementById('epochSlider').value;
-  const modelType = document.querySelector('input[name="ganModel"]:checked').value;
-    
+
   formData.append('file', blob, 'dataset.csv');
   formData.append('epochs', epochs);
   formData.append('model_type', modelType);
@@ -325,11 +461,60 @@ async function startGeneration() {
     const decoder = new TextDecoder();
     let buffer = '';
     let trainingDone = false;
+    let lastMessageTime = Date.now();
+    const TIMEOUT_MS = 600000; // 10 minutes timeout
 
     while (true) {
+      // Check timeout
+      if (Date.now() - lastMessageTime > TIMEOUT_MS) {
+        throw new Error('Training timeout - no update from server for 10 minutes');
+      }
+
       const { value, done } = await reader.read();
-      if (done) break;
+      if (done) {
+        // Flush any remaining bytes from the decoder
+        buffer += decoder.decode();
+
+        // IMPORTANT: process the final buffered line(s) (often contains the last `complete` event)
+        const tailLines = buffer.split('\n');
+        buffer = '';
+        for (const line of tailLines) {
+          if (!line.trim()) continue;
+          try {
+            console.log('[DEBUG] Received (tail):', line);
+            const msg = JSON.parse(line);
+            handleStreamMessage(msg);
+
+            if (msg.session_id && !sessionId) {
+              sessionId = msg.session_id;
+              console.log('[DEBUG] Captured sessionId (tail):', sessionId);
+              updateRunSummaryUI();
+            }
+
+            if (msg.type === 'complete') {
+              trainingDone = true;
+              sessionId = msg.session_id || sessionId;
+              console.log('[DEBUG] Training complete! Session ID:', sessionId);
+              updateRunSummaryUI();
+            }
+            if (msg.type === 'error') {
+              stopProgressSimulation();
+              console.error('[ERROR] Backend error:', msg.message);
+              restoreStep2ConfigView();
+              goToStep(2);
+              showProcessNotice('Training gagal', msg.message || 'Terjadi error dari backend.', () => startGeneration());
+              return;
+            }
+          } catch (e) {
+            console.warn('JSON parse error (tail):', e, 'Line:', line);
+          }
+        }
+
+        console.log('[DEBUG] Stream ended. trainingDone:', trainingDone);
+        break;
+      }
       
+      lastMessageTime = Date.now();
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
       buffer = lines.pop();
@@ -337,40 +522,63 @@ async function startGeneration() {
       for (const line of lines) {
         if (!line.trim()) continue;
         try {
+          console.log('[DEBUG] Received:', line);
           const msg = JSON.parse(line);
           handleStreamMessage(msg);
+
+          if (msg.session_id && !sessionId) {
+            sessionId = msg.session_id;
+            console.log('[DEBUG] Captured sessionId:', sessionId);
+            updateRunSummaryUI();
+          }
+          
           if (msg.type === 'complete') {
             trainingDone = true;
             sessionId = msg.session_id; // Store session ID for subsequent calls
+            console.log('[DEBUG] Training complete! Session ID:', sessionId);
+            updateRunSummaryUI();
           }
           if (msg.type === 'error') {
             stopProgressSimulation();
-            alert('❌ Error backend: ' + msg.message);
+            console.error('[ERROR] Backend error:', msg.message);
+            restoreStep2ConfigView();
             goToStep(2);
+            showProcessNotice('Training gagal', msg.message || 'Terjadi error dari backend.', () => startGeneration());
             return;
           }
-        } catch(e) { console.warn('JSON parse error:', e, line); }
+        } catch(e) { 
+          console.warn('JSON parse error:', e, 'Line:', line);
+        }
       }
     }
 
     stopProgressSimulation();
 
     if (trainingDone) {
-      // Step 4: Fetch synthetic data
+      console.log('[SUCCESS] Training complete! Fetching synthetic data...');
       updateStepUI(4, 50, 'Mengambil data sintetis dari model...');
-      document.getElementById('genStep4').classList.add('active');
       await fetchSynthesis(totalTarget);
     } else {
-      alert('❌ Training selesai tanpa konfirmasi dari server.');
+      console.error('[ERROR] Training selesai tapi trainingDone masih false');
+      restoreStep2ConfigView();
       goToStep(2);
+      showProcessNotice(
+        'Training tidak selesai',
+        'Training selesai tanpa konfirmasi dari server. Silakan coba lagi. (Detail: lihat Console/F12)',
+        () => startGeneration()
+      );
     }
 
   } catch (e) {
     stopProgressSimulation();
-    console.error('Generation error:', e);
-    alert(`❌ Gagal menghubungi backend AI!\nPastikan server Python berjalan di ${API_BASE}`);
+    console.error('[ERROR] Generation error:', e);
+    restoreStep2ConfigView();
     goToStep(2);
-    resetGenButton();
+    showProcessNotice(
+      'Gagal menghubungi backend',
+      `Error: ${e.message}. Pastikan server Python berjalan di ${API_BASE}.`,
+      () => startGeneration()
+    );
   }
 }
 
@@ -445,22 +653,36 @@ function handleStreamMessage(msg) {
 }
 
 function startProgressSimulation(epochs) {
+  trainingStartedAt = Date.now();
   let simProgress = 5;
   // Estimate: ~0.5s per epoch for small datasets, slower for large
   const estimatedSeconds = Math.max(10, epochs * 0.3);
   const incrementPerTick = 85 / (estimatedSeconds * 2); // tick every 500ms, go up to ~90%
   
   progressTimer = setInterval(() => {
+    // Phase A: move up to 90% based on an estimate
     if (simProgress < 90) {
       simProgress += incrementPerTick * (1 - simProgress / 100); // slow down as it approaches 90%
       simProgress = Math.min(90, simProgress);
-      
-      updateStepUI(3, simProgress, `Neural Training: ${Math.round(simProgress)}%`);
-      
-      const overallVal = 35 + (simProgress * 0.5);
-      document.getElementById('genOverallFill').style.width = overallVal + '%';
-      document.getElementById('genOverallText').textContent = Math.round(overallVal) + '% selesai';
+    } else if (simProgress < 99) {
+      // Phase B: keep moving slowly 90% → 99% so it doesn't look stuck
+      const tailFactor = 1 - (simProgress - 90) / 9; // 1 .. 0
+      simProgress += 0.03 * Math.max(0.05, tailFactor);
+      simProgress = Math.min(99, simProgress);
     }
+
+    const elapsedText = trainingStartedAt ? formatDuration(Date.now() - trainingStartedAt) : '';
+    const label = elapsedText
+      ? `Neural Training: ${Math.round(simProgress)}% · ${elapsedText}`
+      : `Neural Training: ${Math.round(simProgress)}%`;
+
+    updateStepUI(3, simProgress, label);
+
+    const overallVal = 35 + (simProgress * 0.5);
+    document.getElementById('genOverallFill').style.width = overallVal + '%';
+    document.getElementById('genOverallText').textContent = elapsedText
+      ? Math.round(overallVal) + '% selesai · ' + elapsedText
+      : Math.round(overallVal) + '% selesai';
   }, 500);
 }
 
@@ -469,16 +691,27 @@ function stopProgressSimulation() {
     clearInterval(progressTimer);
     progressTimer = null;
   }
+  trainingStartedAt = null;
 }
 
 async function fetchSynthesis(totalTarget) {
   try {
+    if (!sessionId) {
+      throw new Error('Session belum terbentuk. Jalankan training ulang.');
+    }
+
+    console.log('[FETCH] Requesting synthesis with sessionId:', sessionId);
+    console.log('[FETCH] Selected columns:', selectedColumns);
+    
     const genRes = await axios.post(`${API_BASE}/synthesize-gan`,
       new URLSearchParams({ 
         num_rows: totalTarget.toString(),
         session_id: sessionId
       })
     );
+    
+    console.log('[FETCH] Synthesis response:', genRes.data);
+    
     // Since we filtered columns before sending, originalHeaders is no longer matching if some were removed
     // We should use the headers returned from backend or the current selectedColumns
     let currentHeaders = selectedColumns;
@@ -486,18 +719,31 @@ async function fetchSynthesis(totalTarget) {
       return currentHeaders.map(h => row[h]);
     });
     
+    console.log('[FETCH] Synthetic data prepared:', syntheticData.length, 'rows');
+    
     updateStepUI(4, 100, 'Data sintetis berhasil dihasilkan!');
     document.getElementById('genStep4').classList.add('done');
     document.getElementById('genStatus4').textContent = '✅';
     document.getElementById('genOverallFill').style.width = '100%';
     document.getElementById('genOverallText').textContent = '100% Selesai! 🎉';
     
-    setTimeout(() => { goToStep(3); showResults(); }, 1000);
+    setTimeout(() => { 
+      console.log('[FLOW] Moving to Step 3 and showing results');
+      setRunningMode(false);
+      goToStep(3); 
+      showResults(); 
+    }, 1000);
+    
   } catch (e) {
-    console.error('Synthesis error:', e);
-    alert('❌ Gagal men-generate data sintetis dari model.\nError: ' + (e.response?.data?.detail || e.message));
+    console.error('[ERROR] Synthesis error:', e);
+    console.error('[ERROR] Response:', e.response?.data);
+    restoreStep2ConfigView();
     goToStep(2);
-    resetGenButton();
+    showProcessNotice(
+      'Sintesis gagal',
+      'Gagal men-generate data sintetis dari model. ' + (e.response?.data?.detail || e.message),
+      () => startGeneration()
+    );
   }
 }
 
@@ -532,14 +778,19 @@ function showResults() {
   if (resetBtn) {
     // Only one listener via init approach but for this one we specifically reset state
     resetBtn.onclick = () => {
+      hideProcessNotice();
       resetUpload();
       syntheticData = [];
       sessionId = "";
+      lastRunSummary = null;
+      setRunningMode(false);
       goToStep(1);
       resetGenerationUI();
       resetGenButton();
       document.getElementById('colSelectionStep1').classList.add('hidden');
       document.getElementById('generationSection').classList.add('hidden');
+      const cfgGrid = document.querySelector('#step2 .config-grid');
+      if (cfgGrid) cfgGrid.classList.remove('hidden');
     };
   }
 }
@@ -753,6 +1004,13 @@ function formatFileSize(bytes) {
   const sizes = ['Bytes', 'KB', 'MB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 function escapeHtml(text) {

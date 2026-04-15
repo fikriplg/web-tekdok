@@ -259,7 +259,7 @@
 
         <div class="callout callout-warning">
           <span class="callout-icon">⚠️</span>
-          <div><strong>Perhatian:</strong> Noise level di atas 30% dapat mengubah distribusi data secara signifikan. Untuk riset medis, gunakan 10-20%.</div>
+          <div><strong>Perhatian:</strong> Epochs yang lebih tinggi menghasilkan model yang lebih akurat tetapi membutuhkan waktu training lebih lama. Untuk dataset medis, gunakan 300-500 epochs.</div>
         </div>
       </div>
     </section>
@@ -337,8 +337,8 @@
             <div class="faq-body">Ya, tentu. Pastikan untuk menjelaskan metode augmentasi yang digunakan dalam bagian metodologi paper Anda. Lihat bagian <a href="#citation">Cara Sitasi</a> di bawah.</div>
           </details>
           <details class="faq">
-            <summary>Berapa noise level yang disarankan?</summary>
-            <div class="faq-body">Untuk riset medis: <strong>10-20%</strong>. Noise terlalu tinggi (&gt;30%) dapat mengubah distribusi data secara signifikan dan mempengaruhi validitas hasil.</div>
+            <summary>Berapa epochs yang disarankan?</summary>
+            <div class="faq-body">Untuk riset medis: <strong>300-500 epochs</strong> biasanya sudah cukup. Gunakan lebih tinggi (600-1000) jika hasil kualitas belum memuaskan, tapi perhatikan waktu training yang semakin lama.</div>
           </details>
         </div>
       </div>
