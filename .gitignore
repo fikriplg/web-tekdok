@@ -28,3 +28,6 @@ backend/venv/
 .venv/
 __pycache__/
 *.pyc
+
+# Local-only notes
+LOCAL_TESTING_GUIDE.md
